@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Olimpo Wallet - Modelo de Métricas B2C</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d2e;
+    --card-hover: #222640;
+    --border: #2a2e45;
+    --accent: #6c5ce7;
+    --accent2: #00cec9;
+    --accent3: #fdcb6e;
+    --accent4: #e17055;
+    --accent5: #74b9ff;
+    --text: #dfe6e9;
+    --text-muted: #636e8a;
+    --green: #00b894;
+    --red: #d63031;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6;
+  }
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px 16px; }
+
+  /* Header */
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+    flex-wrap: wrap; gap: 12px;
+  }
+  .logo-area { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  h1 { font-size: clamp(16px, 3vw, 22px); font-weight: 700; }
+  h1 span { color: #ffffff; }
+  .subtitle { font-size: 12px; color: var(--text-muted); }
+  .filter-bar { display: flex; align-items: center; gap: 8px; flex-shrink: 0; position: relative; }
+  .filter-toggle {
+    padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--card); color: var(--text); cursor: pointer;
+    font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px;
+    transition: all 0.2s;
+  }
+  .filter-toggle:hover { border-color: var(--accent); }
+  .filter-toggle svg { width: 14px; height: 14px; opacity: 0.5; }
+  .filter-dropdown {
+    position: absolute; top: calc(100% + 6px); right: 0; z-index: 100;
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    min-width: 220px; padding: 6px; display: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .filter-dropdown.open { display: block; }
+  .filter-option {
+    padding: 8px 12px; border-radius: 6px; border: none; width: 100%;
+    background: transparent; color: var(--text-muted); cursor: pointer;
+    font-size: 13px; text-align: left; transition: all 0.15s;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .filter-option:hover { background: rgba(108,92,231,0.1); color: var(--text); }
+  .filter-option.active { background: rgba(108,92,231,0.15); color: var(--accent2); font-weight: 600; }
+  .filter-option .filter-hint { font-size: 11px; color: var(--text-muted); opacity: 0.6; }
+  .filter-divider { height: 1px; background: var(--border); margin: 4px 8px; }
+  .filter-custom {
+    padding: 10px 12px; display: none; flex-direction: column; gap: 8px;
+  }
+  .filter-custom.open { display: flex; }
+  .filter-custom label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .filter-custom input[type="date"] {
+    width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--bg); color: var(--text); font-size: 13px; font-family: inherit;
+    outline: none; transition: border-color 0.2s;
+  }
+  .filter-custom input[type="date"]:focus { border-color: var(--accent); }
+  .filter-custom input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cursor: pointer; }
+  .filter-custom-row { display: flex; gap: 8px; }
+  .filter-custom-row > div { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .filter-apply {
+    padding: 7px 14px; border-radius: 6px; border: none;
+    background: var(--accent); color: #fff; font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: opacity 0.2s; margin-top: 4px;
+  }
+  .filter-apply:hover { opacity: 0.85; }
+
+  /* Section titles */
+  .section-title {
+    font-size: 13px; font-weight: 600; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 1.5px;
+    margin: 24px 0 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* KPI Cards */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px; margin-bottom: 8px;
+  }
+  .kpi-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; transition: background 0.2s;
+  }
+  .kpi-card:hover { background: var(--card-hover); }
+  .kpi-label { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .kpi-value { font-size: clamp(20px, 4vw, 28px); font-weight: 700; margin-bottom: 2px; }
+  .kpi-delta { font-size: 11px; font-weight: 600; }
+  .kpi-delta.up { color: var(--green); }
+  .kpi-delta.down { color: var(--red); }
+
+  /* Charts */
+  .charts-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+    gap: 12px; margin-bottom: 8px;
+  }
+  .chart-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; overflow: hidden;
+  }
+  .chart-card.full { grid-column: 1 / -1; }
+  .chart-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+
+  /* Funnel */
+  .funnel-container {
+    display: flex; align-items: flex-start; justify-content: center;
+    gap: 0; padding: 16px 0; flex-wrap: wrap;
+  }
+  .funnel-step { text-align: center; position: relative; flex: 1; min-width: 100px; }
+  .funnel-bar {
+    height: 56px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: clamp(14px, 2.5vw, 18px); font-weight: 700;
+    transition: transform 0.2s;
+  }
+  .funnel-bar:hover { transform: scaleY(1.05); }
+  .funnel-label { font-size: 11px; color: var(--text-muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .funnel-pct { font-size: 11px; color: var(--accent3); margin-top: 3px; font-weight: 600; }
+  .funnel-arrow { color: var(--text-muted); font-size: 20px; flex-shrink: 0; height: 56px; display: flex; align-items: center; justify-content: center; width: 28px; }
+  .funnel-legend { text-align: center; margin-top: 8px; font-size: 11px; color: var(--text-muted); }
+
+  /* Model doc */
+  .model-doc {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; margin-top: 8px;
+  }
+  .model-doc h3 { font-size: 16px; margin-bottom: 12px; color: var(--accent2); }
+  .metric-group { margin-bottom: 20px; }
+  .metric-group h4 { font-size: 12px; color: var(--accent3); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  .metric-row {
+    display: grid; grid-template-columns: 28px 1fr;
+    gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(42,46,69,0.5); font-size: 13px;
+  }
+  .metric-row:last-child { border-bottom: none; }
+  .metric-num { color: var(--accent); font-weight: 700; }
+  .metric-name { font-weight: 600; }
+  .metric-desc { color: var(--text-muted); grid-column: 1 / -1; padding-left: 36px; font-size: 12px; margin-top: -2px; }
+
+  /* Scrollbars */
+  * { scrollbar-width: thin; scrollbar-color: #2a2e45 #0f1117; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #0f1117; }
+  ::-webkit-scrollbar-thumb { background: #2a2e45; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3a3f5c; }
+
+  /* Table */
+  .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 600px; }
+  .data-table th {
+    text-align: left; padding: 8px 10px; border-bottom: 2px solid var(--border);
+    color: var(--text-muted); font-weight: 600; text-transform: uppercase;
+    font-size: 11px; letter-spacing: 0.5px; white-space: nowrap;
+  }
+  .data-table td { padding: 8px 10px; border-bottom: 1px solid rgba(42,46,69,0.4); white-space: nowrap; }
+  .data-table tr:hover td { background: rgba(108,92,231,0.05); }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .badge.inflow { background: rgba(0,206,201,0.15); color: var(--accent2); }
+  .badge.outflow { background: rgba(225,112,85,0.15); color: var(--accent4); }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 2px solid var(--border); overflow-x: auto; }
+  .tab-btn {
+    padding: 10px 20px; border: none; background: none;
+    color: var(--text-muted); cursor: pointer; font-size: 13px;
+    font-weight: 600; position: relative; transition: color 0.2s; white-space: nowrap;
+  }
+  .tab-btn.active { color: var(--accent2); }
+  .tab-btn.active::after {
+    content: ''; position: absolute; bottom: -2px; left: 0; right: 0;
+    height: 2px; background: var(--accent2);
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .container { padding: 12px 8px; }
+    header { flex-direction: column; align-items: flex-start; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .kpi-card { padding: 12px; }
+    .kpi-value { font-size: 20px; }
+    .funnel-container { flex-direction: column; gap: 8px; }
+    .funnel-step { min-width: unset; width: 100%; }
+    .funnel-bar { width: 100% !important; margin: 0 !important; }
+    .funnel-arrow { transform: rotate(90deg); margin: 4px 0; }
+    .chart-card { padding: 12px; }
+    .metric-row { grid-template-columns: 24px 1fr; }
+    .metric-desc { padding-left: 32px; }
+    .tab-btn { padding: 8px 14px; font-size: 12px; }
+    .model-doc { padding: 14px; }
+  }
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="logo-area">
+      <div>
+        <h1>Olimpo <span>Wallet</span> &mdash; Metrics Dashboard <span style="font-size:12px;color:var(--text-muted);font-weight:400;">(draft)</span></h1>
+        <div class="subtitle">Seguimiento Mexas wallet</div>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <button class="filter-toggle" onclick="toggleFilter()" id="filterToggle">
+        <span id="filterLabel">Esta semana</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="filter-dropdown" id="filterDropdown">
+        <button class="filter-option active" onclick="setFilter('thisWeek', 'Esta semana', 1)">Esta semana <span class="filter-hint">S actual</span></button>
+        <button class="filter-option" onclick="setFilter('lastWeek', 'Semana pasada', 2)">Semana pasada <span class="filter-hint">S-1</span></button>
+        <div class="filter-divider"></div>
+        <button class="filter-option" onclick="setFilter('last4w', '&#218;ltimas 4 semanas', 4)">&#218;ltimas 4 semanas</button>
+        <button class="filter-option" onclick="setFilter('last8w', '&#218;ltimas 8 semanas', 8)">&#218;ltimas 8 semanas</button>
+        <button class="filter-option" onclick="setFilter('last12w', '&#218;ltimas 12 semanas', 12)">&#218;ltimas 12 semanas</button>
+        <div class="filter-divider"></div>
+        <button class="filter-option" onclick="setFilter('lastMonth', 'Mes anterior', 4)">Mes anterior</button>
+        <button class="filter-option" onclick="setFilter('thisQuarter', 'Este trimestre', 12)">Este trimestre</button>
+        <div class="filter-divider"></div>
+        <button class="filter-option" onclick="toggleCustomRange(event)">Rango personalizado <span class="filter-hint">&#128197;</span></button>
+        <div class="filter-custom" id="filterCustom">
+          <div class="filter-custom-row">
+            <div>
+              <label>Desde</label>
+              <input type="date" id="dateFrom" value="2026-03-01">
+            </div>
+            <div>
+              <label>Hasta</label>
+              <input type="date" id="dateTo" value="2026-03-31">
+            </div>
+          </div>
+          <button class="filter-apply" onclick="applyCustomRange()">Aplicar</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
+    <button class="tab-btn" onclick="showTab('flows')">Inflow / Outflow</button>
+    <button class="tab-btn" onclick="showTab('conversion')">Conversi&#243;n</button>
+    <button class="tab-btn" onclick="showTab('model')">Modelo de M&#233;tricas</button>
+  </div>
+
+  <!-- TAB 1: DASHBOARD -->
+  <div id="tab-dashboard" class="tab-content active">
+
+    <div class="section-title">Funnel Semanal</div>
+    <div class="chart-card full">
+      <div class="funnel-container" id="funnel"></div>
+      <div class="funnel-legend">
+        Referenciados &rarr; Registrados &rarr; Activos (saldo en tarjeta) &rarr; WAU (solo saldo) | WAP (al menos 1 pago)
+      </div>
+    </div>
+
+    <div class="section-title">KPIs principales (&#250;ltima semana)</div>
+    <div class="kpi-grid" id="kpi-main"></div>
+
+    <div class="section-title">Tendencias Semanales</div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">Funnel de Usuarios</div>
+        <canvas id="chartUsers"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Inflow vs. Outflow (MXN millones)</div>
+        <canvas id="chartFlow"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Revenue y ARPU</div>
+        <canvas id="chartRevenue"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Churn Rate y Tasa de Retenci&#243;n</div>
+        <canvas id="chartChurn"></canvas>
+      </div>
+    </div>
+
+    <div class="section-title">Unit Economics</div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">Txns por WAP e Inflow por WAP</div>
+        <canvas id="chartUnitEcon"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">% Monetizaci&#243;n (Revenue / Inflow)</div>
+        <div style="font-size:11px;color:var(--text-muted);margin:-4px 0 8px;">Del inflow que ingresa al ecosistema qu&#233; porcentaje monetizamos</div>
+        <canvas id="chartMonetization"></canvas>
+      </div>
+    </div>
+
+    <div class="section-title">Composici&#243;n de Inflow</div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">Inflow por Tipo (monto)</div>
+        <canvas id="chartInflowMonto"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Inflow por Tipo (txns)</div>
+        <canvas id="chartInflowTxns"></canvas>
+      </div>
+    </div>
+
+    <div class="section-title">Composici&#243;n de Outflow</div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">Outflow por Tipo (monto)</div>
+        <canvas id="chartOutflowMonto"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Outflow por Tipo (txns)</div>
+        <canvas id="chartOutflowTxns"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: MODELO DE METRICAS -->
+  <div id="tab-model" class="tab-content">
+    <div class="model-doc">
+      <h3>Modelo de M&#233;tricas — Olimpo Wallet B2C</h3>
+
+      <div class="metric-group">
+        <h4>1. Funnel de Usuarios</h4>
+        <div class="metric-row">
+          <span class="metric-num">1</span><span class="metric-name">Referenciados</span>
+          <span class="metric-desc">Usuarios que recibieron un código de referencia. Top funnel — todo el crecimiento viene de aquí.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">2</span><span class="metric-name">Registrados</span>
+          <span class="metric-desc">Usuarios que completaron el registro y activaron su tarjeta.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">3</span><span class="metric-name">Activos (con saldo en tarjeta)</span>
+          <span class="metric-desc">Usuarios que tienen saldo > $0 en su tarjeta. Es la base transaccionable. Activos = WAU + WAP (semanal) = MAU + MAP (mensual).</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">4</span><span class="metric-name">WAU (sin transacci&#243;n)</span>
+          <span class="metric-desc">Activos que <strong>solo tienen saldo en su tarjeta</strong> pero no realizaron ning&#250;n pago ni fondeo en el periodo Dinero quieto = oportunidad de activaci&#243;n.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">5</span><span class="metric-name">WAP (con transacci&#243;n)</span>
+          <span class="metric-desc">Activos que <strong>realizaron al menos 1 pago o fondeo</strong> en el periodo WAU y WAP son mutuamente excluyentes.</span>
+        </div>
+      </div>
+
+      <div class="metric-group">
+        <h4>2. Ratios de Conversión del Funnel</h4>
+        <div class="metric-row">
+          <span class="metric-num">6</span><span class="metric-name">Tasa de Registro (Registrados / Referenciados)</span>
+          <span class="metric-desc">Efectividad del programa de referidos para convertir invitaciones en cuentas.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">7</span><span class="metric-name">Tasa de Fondeo: Activos / Registrados</span>
+          <span class="metric-desc">% de registrados que cargaron saldo a su tarjeta. Mide la profundidad del onboarding.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">8</span><span class="metric-name">Tasa de Activación: WAP / Activos</span>
+          <span class="metric-desc">Del total de usuarios con saldo en tarjeta, qué % transaccionó. Métrica core de activación.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">9</span><span class="metric-name">Ratio WAP / MAP</span>
+          <span class="metric-desc">Frecuencia semanal de los pagadores mensuales. >0.5 indica buen engagement recurrente.</span>
+        </div>
+      </div>
+
+      <div class="metric-group">
+        <h4>3. Volumen Transaccional</h4>
+        <div class="metric-row">
+          <span class="metric-num">10</span><span class="metric-name">Total Inflow (MXN)</span>
+          <span class="metric-desc">Suma semanal de: depósitos SPEI + recargas de tarjeta. Cash-in a la plataforma.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">11</span><span class="metric-name">Total Outflow (MXN)</span>
+          <span class="metric-desc">Suma semanal de: compras con tarjeta + retiros a cripto + retiros SPEI.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">12</span><span class="metric-name">Ratio Outflow / Inflow</span>
+          <span class="metric-desc">Velocidad de circulación del dinero. >1 indica que los usuarios gastan activamente.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">13</span><span class="metric-name">Inflow por WAP</span>
+          <span class="metric-desc">Volumen promedio de cash-in por usuario pagador. Indicador del monto promedio de fondeo por usuario.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">14</span><span class="metric-name">Outflow por WAP</span>
+          <span class="metric-desc">Volumen promedio de cash-out por usuario pagador. Indica cu&#225;nto gasta o retira en promedio cada WAP.</span>
+        </div>
+      </div>
+
+      <div class="metric-group">
+        <h4>4. Transacciones</h4>
+        <div class="metric-row">
+          <span class="metric-num">15</span><span class="metric-name">Total Txns Pago (semanal)</span>
+          <span class="metric-desc">N&#250;mero total de transacciones completadas en la semana.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">16</span><span class="metric-name">Txns por WAP</span>
+          <span class="metric-desc">Frecuencia promedio de transacciones por usuario pagador. Mide recurrencia.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">17</span><span class="metric-name">Ticket Promedio por Tipo</span>
+          <span class="metric-desc">Monto promedio por transacci&#243;n: SPEI in, recarga tarjeta, compra tarjeta, retiro cripto, retiro SPEI.</span>
+        </div>
+      </div>
+
+      <div class="metric-group">
+        <h4>5. Revenue &amp; Monetizaci&#243;n</h4>
+        <div class="metric-row">
+          <span class="metric-num">18</span><span class="metric-name">Revenue Total (semanal)</span>
+          <span class="metric-desc">Ingresos por comisiones sobre transacciones.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">19</span><span class="metric-name">% Monetizaci&#243;n</span>
+          <span class="metric-desc">Revenue / Inflow total. Del inflow al ecosistema, qu&#233; porcentaje monetizamos.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">20</span><span class="metric-name">ARPU (semanal)</span>
+          <span class="metric-desc">Revenue / WAP. Ingreso promedio por usuario pagador activo.</span>
+        </div>
+      </div>
+
+      <div class="metric-group">
+        <h4>6. Retenci&#243;n &amp; Churn</h4>
+        <div class="metric-row">
+          <span class="metric-num">21</span><span class="metric-name">Tasa de Retenci&#243;n Semanal (WAP)</span>
+          <span class="metric-desc">% de WAPs de la semana anterior que vuelven a transaccionar. Core de product-market fit.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">22</span><span class="metric-name">Churn sin Saldo</span>
+          <span class="metric-desc">Usuarios que <strong>ya no tienen saldo en tarjeta y no realizan pagos</strong>. Sacaron su dinero de la plataforma. Requieren estrategia de readquisici&#243;n.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">23</span><span class="metric-name">Churn sin Pagos (+4 semanas)</span>
+          <span class="metric-desc">Usuarios que <strong>tienen saldo en tarjeta pero no transaccionan por 4+ semanas</strong> (WAU cr&#243;nicos). Dinero quieto = oportunidad de reactivaci&#243;n con menor esfuerzo.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">24</span><span class="metric-name">Retenci&#243;n por Cosecha</span>
+          <span class="metric-desc">Retenci&#243;n agrupada por semana de registro (cohort). Se mide desde que el usuario se registr&#243;. Identifica si las cohortes nuevas retienen mejor.</span>
+        </div>
+      </div>
+
+      <div class="metric-group">
+        <h4>7. Composici&#243;n de Flujos</h4>
+        <div class="metric-row">
+          <span class="metric-num">25</span><span class="metric-name">Inflow: SPEI vs Recarga Tarjeta</span>
+          <span class="metric-desc">Distribuci&#243;n % del cash-in por canal.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">26</span><span class="metric-name">Outflow: Compra Tarjeta vs Retiro Cripto vs Retiro SPEI</span>
+          <span class="metric-desc">Distribuci&#243;n % del cash-out.</span>
+        </div>
+      </div>
+
+      <div class="metric-group">
+        <h4>8. Saldo en Tarjeta</h4>
+        <div class="metric-row">
+          <span class="metric-num">27</span><span class="metric-name">Saldo Promedio en Tarjeta</span>
+          <span class="metric-desc">Saldo promedio en tarjetas con saldo > $0. Proxy de confianza en la plataforma.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">28</span><span class="metric-name">% Registrados con Saldo en Tarjeta</span>
+          <span class="metric-desc">Del total de registrados, cu&#225;ntos tienen saldo. Mide profundidad de adopci&#243;n.</span>
+        </div>
+      </div>
+
+      <div class="metric-group">
+        <h4>9. Referidos</h4>
+        <div class="metric-row">
+          <span class="metric-num">29</span><span class="metric-name">C&#243;digos Generados (semanal)</span>
+          <span class="metric-desc">Nuevos c&#243;digos de referencia creados por usuarios existentes.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">30</span><span class="metric-name">C&#243;digos Usados / Generados</span>
+          <span class="metric-desc">Efectividad del referenciador. % de c&#243;digos que resultan en registro.</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-num">31</span><span class="metric-name">Coeficiente Viral (K)</span>
+          <span class="metric-desc">Se medir&#225; cuando se habilite el feature de P2P. Cu&#225;ntos nuevos usuarios trae cada usuario por invitaci&#243;n. K &gt; 1 = crecimiento org&#225;nico exponencial.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: CONVERSIÓN -->
+  <div id="tab-conversion" class="tab-content">
+    <div class="section-title">Funnel de Conversi&#243;n de Usuario</div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">Tasa de Registro (Registrados / Referenciados)</div>
+        <div style="font-size:11px;color:var(--text-muted);margin:-4px 0 8px;">Efectividad del c&#243;digo de referencia para convertir en cuentas</div>
+        <canvas id="chartConvReg"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Tasa de Fondeo (Activos / Registrados)</div>
+        <div style="font-size:11px;color:var(--text-muted);margin:-4px 0 8px;">% de registrados que cargaron saldo a su tarjeta</div>
+        <canvas id="chartConvFondeo"></canvas>
+      </div>
+    </div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">Tasa de Activaci&#243;n en Pagos (WAP / Activos)</div>
+        <div style="font-size:11px;color:var(--text-muted);margin:-4px 0 8px;">De usuarios con saldo, qu&#233; % realiz&#243; al menos 1 pago</div>
+        <canvas id="chartConvActivation"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Conversi&#243;n completa (WAP / Referenciados)</div>
+        <div style="font-size:11px;color:var(--text-muted);margin:-4px 0 8px;">End-to-end: del referenciado al usuario pagador</div>
+        <canvas id="chartConvE2E"></canvas>
+      </div>
+    </div>
+
+    <div class="section-title">Activaci&#243;n de Tarjeta</div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">Tarjetas con Saldo vs Sin Saldo</div>
+        <div style="font-size:11px;color:var(--text-muted);margin:-4px 0 8px;">Distribuci&#243;n de registrados por estado de tarjeta</div>
+        <canvas id="chartCardStatus"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">WAU vs WAP (composici&#243;n de activos)</div>
+        <div style="font-size:11px;color:var(--text-muted);margin:-4px 0 8px;">Proporci&#243;n de activos que solo tienen saldo vs que transaccionan</div>
+        <canvas id="chartWauWap"></canvas>
+      </div>
+    </div>
+
+    <div class="section-title">Tabla de Conversi&#243;n &#8212; &#250;ltima semana</div>
+    <div class="chart-card">
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr><th>Etapa</th><th>Usuarios</th><th>Conversi&#243;n</th><th>Drop-off</th><th>WoW</th></tr>
+          </thead>
+          <tbody id="conv-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: INFLOW / OUTFLOW -->
+  <div id="tab-flows" class="tab-content">
+    <div class="section-title">Detalle de txns inflow / outflow &#8212; &#250;ltima semana</div>
+    <div class="chart-card" style="margin-bottom:12px;">
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr><th>Tipo</th><th>Dir.</th><th>Txns</th><th>Monto</th><th>Ticket Prom.</th><th>% del Inflow/Outflow</th><th>WoW</th></tr>
+          </thead>
+          <tbody id="flow-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">Evoluci&#243;n Inflow por Tipo de Txn</div>
+        <canvas id="chartInflowDetail"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Evoluci&#243;n Outflow por Tipo de Txn</div>
+        <canvas id="chartOutflowDetail"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const WEEKS = ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12'];
+
+function gen(base, vol, trend, n) {
+  const a = [base];
+  for (let i = 1; i < n; i++) a.push(Math.max(0, a[i-1] * (1 + trend + (Math.random()-0.5)*vol)));
+  return a.map(v => Math.round(v));
+}
+function genF(base, vol, trend, n) {
+  const a = [base];
+  for (let i = 1; i < n; i++) a.push(Math.max(0, a[i-1] * (1 + trend + (Math.random()-0.5)*vol)));
+  return a;
+}
+
+const data = {
+  referenciados: gen(200000, 0.04, 0.02, 12),
+  registrados: gen(150000, 0.03, 0.015, 12),
+  wau: gen(24000, 0.06, 0.008, 12),   // saldo en tarjeta, SIN txn
+  wap: gen(8500, 0.07, 0.018, 12),    // saldo en tarjeta, CON txn
+  map: gen(15000, 0.05, 0.015, 12),
+  inflowSPEI: genF(85, 0.1, 0.02, 12),
+  inflowRecarga: genF(42, 0.12, 0.025, 12),
+  outflowCompra: genF(38, 0.1, 0.03, 12),
+  outflowCripto: genF(55, 0.15, 0.01, 12),
+  outflowSPEI: genF(22, 0.1, 0.015, 12),
+  txnsSPEI: gen(45000, 0.08, 0.015, 12),
+  txnsRecarga: gen(28000, 0.1, 0.02, 12),
+  txnsCompra: gen(32000, 0.09, 0.025, 12),
+  txnsCripto: gen(12000, 0.12, 0.01, 12),
+  txnsRetSPEI: gen(8000, 0.1, 0.015, 12),
+  revenue: genF(380, 0.1, 0.02, 12),
+  churnSinSaldo: genF(0.05, 0.12, -0.003, 12),
+  churnSinPagos: genF(0.03, 0.10, -0.002, 12),
+  retention: genF(0.62, 0.06, 0.005, 12),
+};
+
+// Derived
+const activos = data.wau.map((v,i) => v + data.wap[i]); // Activos = con saldo en tarjeta
+const totalInflow = data.inflowSPEI.map((v,i) => v + data.inflowRecarga[i]);
+const totalOutflow = data.outflowCompra.map((v,i) => v + data.outflowCripto[i] + data.outflowSPEI[i]);
+const activationRate = data.wap.map((v,i) => v / activos[i]);
+const fundingRate = activos.map((v,i) => v / data.registrados[i]);
+const regRate = data.registrados.map((v,i) => v / data.referenciados[i]);
+const inflowPerWAP = totalInflow.map((v,i) => (v * 1e6) / data.wap[i]);
+const txnsPerWAP = data.txnsSPEI.map((v,i) =>
+  (data.txnsSPEI[i]+data.txnsRecarga[i]+data.txnsCompra[i]+data.txnsCripto[i]+data.txnsRetSPEI[i]) / data.wap[i]);
+// % Monetización = Revenue / Inflow total (qué % del inflow al ecosistema monetizamos)
+const monetization = data.revenue.map((v,i) => v / totalInflow[i]);
+const arpu = data.revenue.map((v,i) => (v * 1000) / data.wap[i]);
+
+let visibleWeeks = 8;
+
+function fmt(n, dec=0) {
+  if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
+  if (n >= 1000) return (n/1000).toFixed(dec > 0 ? dec : 1) + 'K';
+  return n.toFixed(dec);
+}
+function fmtPct(n) { return (n*100).toFixed(1) + '%'; }
+function delta(arr) {
+  const c = arr[arr.length-1], p = arr[arr.length-2];
+  return p ? (c - p) / p : 0;
+}
+function last(arr) { return arr[arr.length - 1]; }
+
+function renderKPIs() {
+  const kpis = [
+    { label: 'Referenciados', value: fmt(last(data.referenciados)), delta: delta(data.referenciados) },
+    { label: 'Registrados', value: fmt(last(data.registrados)), delta: delta(data.registrados) },
+    { label: 'Tasa Registro', value: fmtPct(last(regRate)), delta: delta(regRate) },
+    { label: 'Activos (WAU + WAP)', value: fmt(last(activos)), delta: delta(activos) },
+    { label: 'WAU (solo saldo)', value: fmt(last(data.wau)), delta: delta(data.wau), invert: true },
+    { label: 'WAP (al menos 1 pago)', value: fmt(last(data.wap)), delta: delta(data.wap) },
+    { label: 'Activación WAP/Activos', value: fmtPct(last(activationRate)), delta: delta(activationRate) },
+    { label: 'Inflow', value: '$' + last(totalInflow).toFixed(1) + 'M', delta: delta(totalInflow) },
+    { label: 'Outflow', value: '$' + last(totalOutflow).toFixed(1) + 'M', delta: delta(totalOutflow) },
+    { label: 'Revenue', value: '$' + fmt(last(data.revenue)*1000), delta: delta(data.revenue) },
+    { label: 'ARPU', value: '$' + last(arpu).toFixed(0), delta: delta(arpu) },
+    { label: 'Churn sin Saldo', value: fmtPct(last(data.churnSinSaldo)), delta: -delta(data.churnSinSaldo), invert: true },
+    { label: 'Churn sin Pagos', value: fmtPct(last(data.churnSinPagos)), delta: -delta(data.churnSinPagos), invert: true },
+    { label: 'Txns/WAP', value: last(txnsPerWAP).toFixed(1), delta: delta(txnsPerWAP) },
+  ];
+  document.getElementById('kpi-main').innerHTML = kpis.map(k => {
+    const d = k.delta;
+    const cls = (k.invert ? -d : d) >= 0 ? 'up' : 'down';
+    const arrow = d >= 0 ? '&#9650;' : '&#9660;';
+    return `<div class="kpi-card">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${k.value}</div>
+      <div class="kpi-delta ${cls}">${arrow} ${fmtPct(Math.abs(d))} WoW</div>
+    </div>`;
+  }).join('');
+}
+
+function renderFunnel() {
+  const steps = [
+    { label: 'Referenciados', value: last(data.referenciados), color: '#636e8a', pctLabel: '' },
+    { label: 'Registrados', value: last(data.registrados), color: 'var(--accent5)', pctLabel: fmtPct(last(data.registrados)/last(data.referenciados)) },
+    { label: 'Activos', value: last(activos), color: 'var(--accent3)', pctLabel: fmtPct(last(activos)/last(data.registrados)) + ' fondeo' },
+    { label: 'WAP (al menos 1 pago)', value: last(data.wap), color: 'var(--accent2)', pctLabel: fmtPct(last(activationRate)) + ' activ.' },
+  ];
+  document.getElementById('funnel').innerHTML = steps.map((s, i) => {
+    const arrow = i > 0 ? '<span class="funnel-arrow">&#10132;</span>' : '';
+    return `${arrow}<div class="funnel-step">
+      <div class="funnel-bar" style="background:${s.color};color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.4)">${fmt(s.value)}</div>
+      <div class="funnel-label">${s.label}</div>
+      ${s.pctLabel ? `<div class="funnel-pct">${s.pctLabel}</div>` : '<div class="funnel-pct">&nbsp;</div>'}
+    </div>`;
+  }).join('');
+}
+
+const charts = {};
+function sl(arr) { return arr.slice(-visibleWeeks); }
+function wkLabels() { return WEEKS.slice(-visibleWeeks); }
+const cOpts = {
+  responsive: true, maintainAspectRatio: true,
+  plugins: { legend: { labels: { color: '#636e8a', font: { size: 11 }, boxWidth: 12 } } },
+  scales: {
+    x: { ticks: { color: '#636e8a', maxRotation: 0 }, grid: { color: 'rgba(42,46,69,0.4)' } },
+    y: { ticks: { color: '#636e8a', precision: 0 }, grid: { color: 'rgba(42,46,69,0.4)' } }
+  }
+};
+
+function mk(id, type, ds, opts={}) {
+  if (charts[id]) charts[id].destroy();
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  charts[id] = new Chart(ctx, {
+    type, data: { labels: wkLabels(), datasets: ds },
+    options: { ...JSON.parse(JSON.stringify(cOpts)), ...opts }
+  });
+}
+
+function renderCharts() {
+  mk('chartUsers', 'line', [
+    { label: 'Referenciados', data: sl(data.referenciados), borderColor: '#636e8a', borderDash:[4,4], tension:.3, pointRadius:2 },
+    { label: 'Registrados', data: sl(data.registrados), borderColor: '#74b9ff', tension:.3, fill:false, pointRadius:2 },
+    { label: 'Activos', data: sl(activos), borderColor: '#fdcb6e', backgroundColor:'rgba(253,203,110,0.06)', fill:true, tension:.3, pointRadius:2 },
+    { label: 'WAU (solo saldo)', data: sl(data.wau), borderColor: '#e17055', backgroundColor:'rgba(225,112,85,0.08)', fill:true, tension:.3, pointRadius:2 },
+    { label: 'WAP (al menos 1 pago)', data: sl(data.wap), borderColor: '#00cec9', backgroundColor:'rgba(0,206,201,0.08)', fill:true, tension:.3, pointRadius:2 },
+  ]);
+  mk('chartFlow', 'bar', [
+    { label: 'Inflow', data: sl(totalInflow), backgroundColor: 'rgba(0,206,201,0.7)', borderRadius: 4 },
+    { label: 'Outflow', data: sl(totalOutflow), backgroundColor: 'rgba(225,112,85,0.7)', borderRadius: 4 },
+  ]);
+  mk('chartRevenue', 'line', [
+    { label: 'Revenue (K MXN)', data: sl(data.revenue), borderColor:'#fdcb6e', backgroundColor:'rgba(253,203,110,0.1)', fill:true, tension:.3, yAxisID:'y', pointRadius:2 },
+    { label: 'ARPU ($)', data: sl(arpu).map(v=>+v.toFixed(1)), borderColor:'#74b9ff', borderDash:[5,5], tension:.3, yAxisID:'y1', pointRadius:2 },
+  ], { scales: { ...cOpts.scales, y:{...cOpts.scales.y, position:'left'}, y1:{...cOpts.scales.y, position:'right', grid:{drawOnChartArea:false}} } });
+  mk('chartChurn', 'line', [
+    { label: 'Churn sin Saldo %', data: sl(data.churnSinSaldo).map(v=>+(v*100).toFixed(1)), borderColor:'#d63031', backgroundColor:'rgba(214,48,49,0.1)', fill:true, tension:.3, yAxisID:'y', pointRadius:2 },
+    { label: 'Churn sin Pagos %', data: sl(data.churnSinPagos).map(v=>+(v*100).toFixed(1)), borderColor:'#e17055', backgroundColor:'rgba(225,112,85,0.1)', fill:true, tension:.3, yAxisID:'y', pointRadius:2 },
+    { label: 'Retención %', data: sl(data.retention).map(v=>+(v*100).toFixed(1)), borderColor:'#00b894', backgroundColor:'rgba(0,184,148,0.1)', fill:true, tension:.3, yAxisID:'y1', pointRadius:2 },
+  ], { scales: { ...cOpts.scales, y:{...cOpts.scales.y, position:'left'}, y1:{...cOpts.scales.y, position:'right', grid:{drawOnChartArea:false}} } });
+  mk('chartUnitEcon', 'line', [
+    { label: 'Txns/WAP', data: sl(txnsPerWAP).map(v=>+v.toFixed(1)), borderColor:'#6c5ce7', tension:.3, yAxisID:'y', pointRadius:2 },
+    { label: 'Inflow/WAP ($)', data: sl(inflowPerWAP).map(v=>Math.round(v)), borderColor:'#00cec9', tension:.3, yAxisID:'y1', pointRadius:2 },
+  ], { scales: { ...cOpts.scales, y:{...cOpts.scales.y, position:'left'}, y1:{...cOpts.scales.y, position:'right', grid:{drawOnChartArea:false}} } });
+  mk('chartMonetization', 'line', [
+    { label: '% Monetización', data: sl(monetization).map(v=>+(v*100).toFixed(2)), borderColor:'#fdcb6e', backgroundColor:'rgba(253,203,110,0.15)', fill:true, tension:.3, pointRadius:2 },
+  ]);
+  const stacked = { scales: { ...cOpts.scales, x:{...cOpts.scales.x, stacked:true}, y:{...cOpts.scales.y, stacked:true} } };
+  mk('chartInflowMonto', 'bar', [
+    { label: 'SPEI', data: sl(data.inflowSPEI), backgroundColor:'rgba(0,206,201,0.7)', borderRadius:4 },
+    { label: 'Recarga Tarjeta', data: sl(data.inflowRecarga), backgroundColor:'rgba(253,203,110,0.7)', borderRadius:4 },
+  ], stacked);
+  mk('chartInflowTxns', 'bar', [
+    { label: 'SPEI', data: sl(data.txnsSPEI), backgroundColor:'rgba(0,206,201,0.7)', borderRadius:4 },
+    { label: 'Recarga Tarjeta', data: sl(data.txnsRecarga), backgroundColor:'rgba(253,203,110,0.7)', borderRadius:4 },
+  ], stacked);
+  mk('chartOutflowMonto', 'bar', [
+    { label: 'Compra Tarjeta', data: sl(data.outflowCompra), backgroundColor:'rgba(0,206,201,0.7)', borderRadius:4 },
+    { label: 'Retiro Cripto', data: sl(data.outflowCripto), backgroundColor:'rgba(108,92,231,0.7)', borderRadius:4 },
+    { label: 'Retiro SPEI', data: sl(data.outflowSPEI), backgroundColor:'rgba(253,203,110,0.7)', borderRadius:4 },
+  ], stacked);
+  mk('chartOutflowTxns', 'bar', [
+    { label: 'Compra Tarjeta', data: sl(data.txnsCompra), backgroundColor:'rgba(0,206,201,0.7)', borderRadius:4 },
+    { label: 'Retiro Cripto', data: sl(data.txnsCripto), backgroundColor:'rgba(108,92,231,0.7)', borderRadius:4 },
+    { label: 'Retiro SPEI', data: sl(data.txnsRetSPEI), backgroundColor:'rgba(253,203,110,0.7)', borderRadius:4 },
+  ], stacked);
+  mk('chartInflowDetail', 'line', [
+    { label: 'SPEI', data: sl(data.inflowSPEI), borderColor:'#00cec9', tension:.3, fill:true, backgroundColor:'rgba(0,206,201,0.1)', pointRadius:2 },
+    { label: 'Recarga Tarjeta', data: sl(data.inflowRecarga), borderColor:'#fdcb6e', tension:.3, fill:true, backgroundColor:'rgba(253,203,110,0.1)', pointRadius:2 },
+  ]);
+  mk('chartOutflowDetail', 'line', [
+    { label: 'Compra Tarjeta', data: sl(data.outflowCompra), borderColor:'#00cec9', tension:.3, pointRadius:2 },
+    { label: 'Retiro Cripto', data: sl(data.outflowCripto), borderColor:'#6c5ce7', tension:.3, pointRadius:2 },
+    { label: 'Retiro SPEI', data: sl(data.outflowSPEI), borderColor:'#fdcb6e', tension:.3, pointRadius:2 },
+  ]);
+}
+
+function renderFlowTable() {
+  const wow = (arr) => { const p = arr[arr.length-2]; return p ? (last(arr)-p)/p : 0; };
+  const tIn = last(data.inflowSPEI) + last(data.inflowRecarga);
+  const tOut = last(data.outflowCompra) + last(data.outflowCripto) + last(data.outflowSPEI);
+  const flows = [
+    { n:'SPEI (depósito)', d:'inflow', tx:last(data.txnsSPEI), m:last(data.inflowSPEI), p:last(data.inflowSPEI)/tIn, w:wow(data.inflowSPEI) },
+    { n:'Recarga Tarjeta', d:'inflow', tx:last(data.txnsRecarga), m:last(data.inflowRecarga), p:last(data.inflowRecarga)/tIn, w:wow(data.inflowRecarga) },
+    { n:'Compra con Tarjeta', d:'outflow', tx:last(data.txnsCompra), m:last(data.outflowCompra), p:last(data.outflowCompra)/tOut, w:wow(data.outflowCompra) },
+    { n:'Retiro a Cripto', d:'outflow', tx:last(data.txnsCripto), m:last(data.outflowCripto), p:last(data.outflowCripto)/tOut, w:wow(data.outflowCripto) },
+    { n:'Retiro SPEI', d:'outflow', tx:last(data.txnsRetSPEI), m:last(data.outflowSPEI), p:last(data.outflowSPEI)/tOut, w:wow(data.outflowSPEI) },
+  ];
+  document.getElementById('flow-table-body').innerHTML = flows.map(f => {
+    const tk = (f.m*1e6)/f.tx, cls = f.w>=0?'up':'down', ar = f.w>=0?'&#9650;':'&#9660;';
+    return `<tr><td><strong>${f.n}</strong></td><td><span class="badge ${f.d}">${f.d}</span></td>
+    <td>${fmt(f.tx)}</td><td>$${f.m.toFixed(1)}M</td><td>$${fmt(tk)}</td>
+    <td>${fmtPct(f.p)}</td><td class="kpi-delta ${cls}">${ar} ${fmtPct(Math.abs(f.w))}</td></tr>`;
+  }).join('');
+}
+
+function renderConversionCharts() {
+  const pctY = { scales: { ...cOpts.scales, y: { ...cOpts.scales.y, ticks: { ...cOpts.scales.y.ticks, precision: 0, callback: v => v + '%' } } } };
+  mk('chartConvReg','line',[
+    {label:'Tasa Registro %',data:sl(regRate).map(v=>+(v*100).toFixed(1)),borderColor:'#74b9ff',backgroundColor:'rgba(116,185,255,0.1)',fill:true,tension:.3,pointRadius:2}
+  ], pctY);
+  mk('chartConvFondeo','line',[
+    {label:'Tasa Fondeo %',data:sl(fundingRate).map(v=>+(v*100).toFixed(1)),borderColor:'#fdcb6e',backgroundColor:'rgba(253,203,110,0.1)',fill:true,tension:.3,pointRadius:2}
+  ], pctY);
+  mk('chartConvActivation','line',[
+    {label:'Tasa Activación en Pagos %',data:sl(activationRate).map(v=>+(v*100).toFixed(1)),borderColor:'#00cec9',backgroundColor:'rgba(0,206,201,0.1)',fill:true,tension:.3,pointRadius:2}
+  ], pctY);
+  const e2e = data.wap.map((v,i)=>v/data.referenciados[i]);
+  mk('chartConvE2E','line',[
+    {label:'Conversión E2E %',data:sl(e2e).map(v=>+(v*100).toFixed(2)),borderColor:'#6c5ce7',backgroundColor:'rgba(108,92,231,0.1)',fill:true,tension:.3,pointRadius:2}
+  ], pctY);
+  const stk = { scales: { ...cOpts.scales, x:{...cOpts.scales.x, stacked:true}, y:{...cOpts.scales.y, stacked:true, ticks:{...cOpts.scales.y.ticks, precision:0}} } };
+  const sinSaldo=data.registrados.map((v,i)=>v-activos[i]);
+  mk('chartCardStatus','bar',[
+    {label:'Con Saldo (Activos)',data:sl(activos),backgroundColor:'rgba(0,206,201,0.7)',borderRadius:4},
+    {label:'Sin Saldo',data:sl(sinSaldo),backgroundColor:'rgba(99,110,138,0.5)',borderRadius:4},
+  ], stk);
+  mk('chartWauWap','bar',[
+    {label:'WAU (solo saldo)',data:sl(data.wau),backgroundColor:'rgba(253,203,110,0.7)',borderRadius:4},
+    {label:'WAP (al menos 1 pago)',data:sl(data.wap),backgroundColor:'rgba(0,206,201,0.7)',borderRadius:4},
+  ], stk);
+}
+
+function renderConvTable() {
+  const wow=(arr)=>{const p=arr[arr.length-2];return p?(last(arr)-p)/p:0;};
+  const steps=[
+    {label:'Referenciados',val:last(data.referenciados),conv:'-',drop:'-',w:wow(data.referenciados)},
+    {label:'Registrados',val:last(data.registrados),conv:fmtPct(last(data.registrados)/last(data.referenciados)),drop:fmtPct(1-last(data.registrados)/last(data.referenciados)),w:wow(data.registrados)},
+    {label:'Activos (WAU+WAP)',val:last(activos),conv:fmtPct(last(activos)/last(data.registrados)),drop:fmtPct(1-last(activos)/last(data.registrados)),w:wow(activos)},
+    {label:'WAP (al menos 1 pago)',val:last(data.wap),conv:fmtPct(last(data.wap)/last(activos)),drop:fmtPct(1-last(data.wap)/last(activos)),w:wow(data.wap)},
+  ];
+  document.getElementById('conv-table-body').innerHTML=steps.map(s=>{
+    const cls=s.w>=0?'up':'down',ar=s.w>=0?'&#9650;':'&#9660;';
+    return `<tr><td><strong>${s.label}</strong></td><td>${fmt(s.val)}</td><td>${s.conv}</td><td>${s.drop}</td><td class="kpi-delta ${cls}">${ar} ${fmtPct(Math.abs(s.w))}</td></tr>`;
+  }).join('');
+}
+
+function showTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.target.classList.add('active');
+  renderCharts();
+  if (tab === 'flows') renderFlowTable();
+  if (tab === 'conversion') { renderConversionCharts(); renderConvTable(); }
+}
+
+function toggleFilter() {
+  document.getElementById('filterDropdown').classList.toggle('open');
+}
+function setFilter(key, label, weeks) {
+  visibleWeeks = weeks;
+  document.getElementById('filterLabel').textContent = label;
+  document.getElementById('filterDropdown').classList.remove('open');
+  document.querySelectorAll('.filter-option').forEach(b => b.classList.remove('active'));
+  event.target.closest('.filter-option').classList.add('active');
+  renderAll();
+}
+function toggleCustomRange(e) {
+  e.stopPropagation();
+  document.getElementById('filterCustom').classList.toggle('open');
+}
+function applyCustomRange() {
+  const from = document.getElementById('dateFrom').value;
+  const to = document.getElementById('dateTo').value;
+  if (!from || !to) return;
+  const d1 = new Date(from), d2 = new Date(to);
+  const diffDays = Math.max(1, Math.round((d2 - d1) / (1000*60*60*24)));
+  const weeks = Math.max(1, Math.min(12, Math.round(diffDays / 7)));
+  const fmtDate = (d) => d.toLocaleDateString('es-MX', { day:'numeric', month:'short' });
+  const label = fmtDate(d1) + ' – ' + fmtDate(d2);
+  visibleWeeks = weeks;
+  document.getElementById('filterLabel').textContent = label;
+  document.getElementById('filterDropdown').classList.remove('open');
+  document.querySelectorAll('.filter-option').forEach(b => b.classList.remove('active'));
+  renderAll();
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.filter-bar')) {
+    document.getElementById('filterDropdown').classList.remove('open');
+    document.getElementById('filterCustom').classList.remove('open');
+  }
+});
+
+function renderAll() { renderKPIs(); renderFunnel(); renderCharts(); renderFlowTable(); renderConversionCharts(); renderConvTable(); }
+renderAll();
+</script>
+</body>
+</html>
