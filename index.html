@@ -345,7 +345,9 @@
   .kpi-subtabs {
     display: flex;
     gap: 8px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .kpi-subtab {
     border: 1px solid rgba(17,17,17,0.08);
@@ -357,6 +359,8 @@
     font-weight: 560;
     cursor: pointer;
     transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   .kpi-subtab.active {
     background: #111111;
