@@ -6,93 +6,227 @@
 <title>Olimpo Wallet - Modelo de Métricas B2C</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
+  html { color-scheme: light; }
   :root {
-    --bg: #0f1117;
-    --card: #1a1d2e;
-    --card-hover: #222640;
-    --border: #2a2e45;
-    --accent: #6c5ce7;
-    --accent2: #00cec9;
-    --accent3: #fdcb6e;
-    --accent4: #e17055;
-    --accent5: #74b9ff;
-    --text: #dfe6e9;
-    --text-muted: #636e8a;
-    --green: #00b894;
-    --red: #d63031;
+    --bg: #f4f4f4;
+    --bg-soft: #efefef;
+    --card: rgba(255,255,255,0.5);
+    --card-strong: rgba(255,255,255,0.78);
+    --card-hover: rgba(255,255,255,0.68);
+    --border: rgba(17,17,17,0.08);
+    --border-strong: rgba(17,17,17,0.12);
+    --accent: #111111;
+    --accent2: #8fb6a0;
+    --accent3: #b7d8c7;
+    --accent4: #7a7a7a;
+    --accent5: #d8d8d8;
+    --text: #111111;
+    --text-muted: #6b6b6b;
+    --text-subtle: #9a9a9a;
+    --green: #2e8b57;
+    --red: #b65c5c;
+    --shadow: 0 16px 40px rgba(17,17,17,0.06);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg); color: var(--text); line-height: 1.6;
+    background:
+      radial-gradient(circle at top left, rgba(255,255,255,0.9), transparent 26%),
+      radial-gradient(circle at top right, rgba(255,255,255,0.8), transparent 28%),
+      linear-gradient(180deg, #fbfbfb 0%, var(--bg) 38%, #efefef 100%);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
   }
-  .container { max-width: 1400px; margin: 0 auto; padding: 24px 16px; }
+  .container { max-width: 1440px; margin: 0 auto; padding: 28px 18px 40px; }
+  button, input { font: inherit; }
+  button:focus-visible, input:focus-visible {
+    outline: 2px solid rgba(17,17,17,0.82);
+    outline-offset: 2px;
+  }
 
   /* Header */
   header {
     display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+    margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid rgba(17,17,17,0.06);
     flex-wrap: wrap; gap: 12px;
   }
   .logo-area { display: flex; align-items: center; gap: 12px; min-width: 0; }
-  h1 { font-size: clamp(16px, 3vw, 22px); font-weight: 700; }
-  h1 span { color: #ffffff; }
+  h1 { font-size: clamp(18px, 3vw, 24px); font-weight: 540; letter-spacing: -0.03em; color: #3a3a3a; }
+  h1 span { color: var(--text); }
   .subtitle { font-size: 12px; color: var(--text-muted); }
   .filter-bar { display: flex; align-items: center; gap: 8px; flex-shrink: 0; position: relative; }
   .filter-toggle {
-    padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border);
-    background: var(--card); color: var(--text); cursor: pointer;
-    font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px;
-    transition: all 0.2s;
+    padding: 9px 15px; border-radius: 999px; border: 1px solid var(--border);
+    background: var(--card-strong); color: var(--text); cursor: pointer;
+    font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px;
+    transition: border-color 0.2s, background-color 0.2s;
+    backdrop-filter: blur(14px);
+    box-shadow: var(--shadow);
   }
-  .filter-toggle:hover { border-color: var(--accent); }
+  .filter-toggle:hover { border-color: var(--border-strong); background: rgba(255,255,255,0.92); }
   .filter-toggle svg { width: 14px; height: 14px; opacity: 0.5; }
   .filter-dropdown {
     position: absolute; top: calc(100% + 6px); right: 0; z-index: 100;
-    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    background: rgba(255,255,255,0.94); border: 1px solid var(--border); border-radius: 18px;
     min-width: 220px; padding: 6px; display: none;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    box-shadow: 0 24px 50px rgba(17,17,17,0.12);
+    backdrop-filter: blur(20px);
   }
   .filter-dropdown.open { display: block; }
   .filter-option {
-    padding: 8px 12px; border-radius: 6px; border: none; width: 100%;
+    padding: 9px 12px; border-radius: 12px; border: none; width: 100%;
     background: transparent; color: var(--text-muted); cursor: pointer;
-    font-size: 13px; text-align: left; transition: all 0.15s;
+    font-size: 13px; text-align: left; transition: background-color 0.15s, color 0.15s;
     display: flex; justify-content: space-between; align-items: center;
   }
-  .filter-option:hover { background: rgba(108,92,231,0.1); color: var(--text); }
-  .filter-option.active { background: rgba(108,92,231,0.15); color: var(--accent2); font-weight: 600; }
+  .filter-option:hover { background: rgba(17,17,17,0.05); color: var(--text); }
+  .filter-option.active { background: #111111; color: #ffffff; font-weight: 600; }
   .filter-option .filter-hint { font-size: 11px; color: var(--text-muted); opacity: 0.6; }
-  .filter-divider { height: 1px; background: var(--border); margin: 4px 8px; }
+  .filter-divider { height: 1px; background: rgba(17,17,17,0.06); margin: 4px 8px; }
   .filter-custom {
     padding: 10px 12px; display: none; flex-direction: column; gap: 8px;
   }
   .filter-custom.open { display: flex; }
   .filter-custom label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
   .filter-custom input[type="date"] {
-    width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border);
-    background: var(--bg); color: var(--text); font-size: 13px; font-family: inherit;
+    width: 100%; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border);
+    background: rgba(255,255,255,0.7); color: var(--text); font-size: 13px; font-family: inherit;
     outline: none; transition: border-color 0.2s;
   }
   .filter-custom input[type="date"]:focus { border-color: var(--accent); }
-  .filter-custom input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cursor: pointer; }
+  .filter-custom input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; }
   .filter-custom-row { display: flex; gap: 8px; }
   .filter-custom-row > div { flex: 1; display: flex; flex-direction: column; gap: 4px; }
   .filter-apply {
-    padding: 7px 14px; border-radius: 6px; border: none;
-    background: var(--accent); color: #fff; font-size: 12px; font-weight: 600;
+    padding: 9px 14px; border-radius: 999px; border: none;
+    background: #111111; color: #fff; font-size: 12px; font-weight: 600;
     cursor: pointer; transition: opacity 0.2s; margin-top: 4px;
   }
   .filter-apply:hover { opacity: 0.85; }
 
   /* Section titles */
   .section-title {
-    font-size: 13px; font-weight: 600; color: var(--text-muted);
+    font-size: 12px; font-weight: 700; color: var(--text-muted);
     text-transform: uppercase; letter-spacing: 1.5px;
-    margin: 24px 0 12px; display: flex; align-items: center; gap: 8px;
+    margin: 26px 0 12px; display: flex; align-items: center; gap: 8px;
   }
-  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(17,17,17,0.08); }
 
+  /* Executive summary */
+  .executive-summary {
+    background:
+      radial-gradient(circle at top right, rgba(255,255,255,0.85), transparent 26%),
+      linear-gradient(135deg, rgba(255,255,255,0.72), rgba(255,255,255,0.45)),
+      var(--card);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    padding: 22px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(16px);
+    box-shadow: var(--shadow);
+  }
+  .summary-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .summary-eyebrow {
+    font-size: 11px;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: #7f7f7f;
+    font-weight: 560;
+    margin-bottom: 6px;
+  }
+  .summary-title {
+    font-size: clamp(24px, 4vw, 34px);
+    line-height: 1.05;
+    margin-bottom: 8px;
+    text-wrap: balance;
+    color: #555555;
+    font-weight: 530;
+  }
+  .summary-copy {
+    max-width: 720px;
+    color: #757575;
+    font-size: 14px;
+  }
+  .summary-meta {
+    min-width: 220px;
+    background: rgba(255,255,255,0.62);
+    border: 1px solid rgba(17,17,17,0.06);
+    border-radius: 22px;
+    padding: 14px 16px;
+  }
+  .summary-meta-label {
+    font-size: 11px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #7f7f7f;
+    margin-bottom: 4px;
+  }
+  .summary-meta-value {
+    font-size: 18px;
+    font-weight: 560;
+    color: #565656;
+    margin-bottom: 8px;
+  }
+  .summary-meta-note {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .kpi-grid.executive-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    margin-bottom: 14px;
+  }
+  .executive-kpi {
+    background: rgba(255,255,255,0.58);
+    border-color: rgba(17,17,17,0.06);
+    min-height: 118px;
+  }
+  .executive-kpi .kpi-value {
+    font-size: clamp(24px, 4vw, 34px);
+    color: #505050;
+    font-weight: 560;
+  }
+  .executive-kpi .kpi-context {
+    font-size: 11px;
+    color: #7a7a7a;
+  }
+  .insights-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .insight-card {
+    background: rgba(255,255,255,0.58);
+    border: 1px solid rgba(17,17,17,0.06);
+    border-radius: 22px;
+    padding: 14px;
+  }
+  .insight-label {
+    font-size: 11px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #7f7f7f;
+    margin-bottom: 6px;
+    font-weight: 560;
+  }
+  .insight-meaning {
+    font-size: 11px;
+    color: #8b8b8b;
+    margin-bottom: 8px;
+  }
+  .insight-value {
+    font-size: 18px;
+    font-weight: 560;
+    color: #545454;
+    margin-bottom: 6px;
+  }
   /* KPI Cards */
   .kpi-grid {
     display: grid;
@@ -101,14 +235,191 @@
   }
   .kpi-card {
     background: var(--card); border: 1px solid var(--border);
-    border-radius: 12px; padding: 16px; transition: background 0.2s;
+    border-radius: 24px; padding: 18px; transition: background 0.2s;
+    backdrop-filter: blur(16px);
+    box-shadow: var(--shadow);
   }
   .kpi-card:hover { background: var(--card-hover); }
-  .kpi-label { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .kpi-value { font-size: clamp(20px, 4vw, 28px); font-weight: 700; margin-bottom: 2px; }
+  .kpi-label { font-size: 11px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; color: #7f7f7f; font-weight: 560; }
+  .kpi-value { font-size: clamp(20px, 4vw, 28px); font-weight: 700; margin-bottom: 2px; font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
   .kpi-delta { font-size: 11px; font-weight: 600; }
   .kpi-delta.up { color: var(--green); }
   .kpi-delta.down { color: var(--red); }
+  .overview-grid {
+    --overview-row-height: 344px;
+    display: grid;
+    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr) minmax(260px, 320px);
+    gap: 14px;
+    align-items: stretch;
+    margin-bottom: 18px;
+  }
+  .overview-grid > .chart-card {
+    min-height: var(--overview-row-height);
+    display: flex;
+    flex-direction: column;
+  }
+  .overview-kpis-card {
+    min-height: 100%;
+  }
+  .north-star-card {
+    display: grid;
+    gap: 10px;
+    height: 100%;
+    align-content: start;
+  }
+  .north-star-formula {
+    display: grid;
+    gap: 8px;
+  }
+  .north-star-row {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(17,17,17,0.06);
+  }
+  .north-star-step {
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: #444444;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 620;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .north-star-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #7f7f7f;
+    font-weight: 560;
+  }
+  .north-star-value {
+    font-size: 16px;
+    font-weight: 560;
+    color: #4a4a4a;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+  .north-star-row.is-result {
+    margin-top: 2px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(17,17,17,0.08);
+    border-bottom: none;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .north-star-row.is-result .north-star-label {
+    color: #8c8c8c;
+  }
+  .north-star-row.is-result .north-star-value {
+    text-align: right;
+    font-size: 28px;
+    letter-spacing: -0.03em;
+    color: #3f3f3f;
+  }
+  .north-star-footnote {
+    border-top: 1px solid rgba(17,17,17,0.08);
+    padding-top: 10px;
+    font-size: 10px;
+    color: #7d7d7d;
+    letter-spacing: -0.01em;
+  }
+  .north-star-defs {
+    display: grid;
+    gap: 4px;
+    margin-top: 6px;
+  }
+  .north-star-def {
+    white-space: normal;
+  }
+  .kpi-shell {
+    display: grid;
+    gap: 12px;
+    height: 100%;
+    align-content: start;
+  }
+  .kpi-subtabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .kpi-subtab {
+    border: 1px solid rgba(17,17,17,0.08);
+    background: rgba(255,255,255,0.55);
+    color: #8a8a8a;
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 560;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  }
+  .kpi-subtab.active {
+    background: #111111;
+    color: #ffffff;
+    border-color: #111111;
+  }
+  .kpi-panel {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .cluster-card {
+    background: rgba(255,255,255,0.34);
+    border: 1px solid rgba(17,17,17,0.06);
+    border-radius: 20px;
+    padding: 12px 14px;
+    backdrop-filter: blur(16px);
+  }
+  .cluster-title {
+    font-size: 11px;
+    color: #7f7f7f;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+    font-weight: 620;
+    margin-bottom: 12px;
+  }
+  .metric-stack {
+    display: grid;
+    gap: 10px;
+  }
+  .metric-line {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: end;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(17,17,17,0.06);
+  }
+  .metric-line:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+  .metric-line-label {
+    font-size: 11px;
+    color: #7f7f7f;
+    font-weight: 560;
+  }
+  .metric-line-value {
+    font-size: 15px;
+    font-weight: 560;
+    color: #434343;
+    font-variant-numeric: tabular-nums;
+  }
+  .metric-line-sub {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 10px;
+    color: var(--text-subtle);
+  }
+  .metric-line-sub .up { color: var(--green); }
+  .metric-line-sub .down { color: var(--red); }
 
   /* Charts */
   .charts-grid {
@@ -117,52 +428,153 @@
   }
   .chart-card {
     background: var(--card); border: 1px solid var(--border);
-    border-radius: 12px; padding: 16px; overflow: hidden;
+    border-radius: 28px; padding: 18px; overflow: hidden;
+    backdrop-filter: blur(16px);
+    box-shadow: var(--shadow);
   }
   .chart-card.full { grid-column: 1 / -1; }
-  .chart-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 14px;
+  }
+  .chart-title { font-size: 11px; font-weight: 540; margin-bottom: 4px; color: #7f7f7f; text-transform: uppercase; letter-spacing: 0.6px; }
+  .chart-summary-primary {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 2px;
+  }
+  .chart-summary-value {
+    font-size: clamp(24px, 3vw, 38px);
+    line-height: 1;
+    font-weight: 560;
+    color: #4b4b4b;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.04em;
+  }
+  .chart-summary-delta {
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .chart-summary-delta.up { color: var(--green); }
+  .chart-summary-delta.down { color: var(--red); }
+  .chart-summary-previous {
+    font-size: 13px;
+    color: #465b7c;
+  }
+  .chart-summary-note { font-size: 12px; color: #7d7d7d; }
+  .chart-canvas-wrap {
+    min-height: 220px;
+  }
 
   /* Funnel */
+  .funnel-shell {
+    display: grid;
+    gap: 10px;
+    height: 100%;
+    align-content: start;
+  }
   .funnel-container {
-    display: flex; align-items: flex-start; justify-content: center;
-    gap: 0; padding: 16px 0; flex-wrap: wrap;
+    display: grid;
+    gap: 6px;
+    padding: 0;
+    justify-items: stretch;
   }
-  .funnel-step { text-align: center; position: relative; flex: 1; min-width: 100px; }
+  .funnel-step {
+    position: relative;
+    padding: 8px 12px 8px 40px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.34);
+    border: 1px solid rgba(17,17,17,0.06);
+    width: 100%;
+    min-width: 0;
+    justify-self: stretch;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+  }
   .funnel-bar {
-    height: 56px; border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: clamp(14px, 2.5vw, 18px); font-weight: 700;
+    height: auto;
+    border-radius: 0;
+    display: block;
+    background: transparent !important;
+    color: var(--text) !important;
+    text-shadow: none !important;
+    font-size: clamp(14px, 1.6vw, 18px);
+    font-weight: 620;
     transition: transform 0.2s;
+    text-align: right;
+    line-height: 1.1;
+    grid-column: 2;
+    grid-row: 1 / span 2;
   }
-  .funnel-bar:hover { transform: scaleY(1.05); }
-  .funnel-label { font-size: 11px; color: var(--text-muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .funnel-pct { font-size: 11px; color: var(--accent3); margin-top: 3px; font-weight: 600; }
-  .funnel-arrow { color: var(--text-muted); font-size: 20px; flex-shrink: 0; height: 56px; display: flex; align-items: center; justify-content: center; width: 28px; }
-  .funnel-legend { text-align: center; margin-top: 8px; font-size: 11px; color: var(--text-muted); }
+  .funnel-bar:hover { transform: translateY(-1px); }
+  .funnel-step::before {
+    content: attr(data-step);
+    position: absolute;
+    left: 14px;
+    top: 12px;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: #444444;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 620;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .funnel-label { font-size: 10px; color: #7f7f7f; text-transform: uppercase; letter-spacing: 0.6px; text-align:left; font-weight: 560; grid-column: 1; }
+  .funnel-pct { font-size: 10px; color: #8a8a8a; margin-top: 1px; font-weight: 560; grid-column: 1; }
+  .funnel-arrow { display: none; }
+  .funnel-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    color: #b1b1b1;
+    font-size: 16px;
+    line-height: 1;
+  }
+  .funnel-footnote {
+    font-size: 10px;
+    color: #7d7d7d;
+    border-top: 1px solid rgba(17,17,17,0.08);
+    padding-top: 10px;
+    white-space: nowrap;
+  }
 
   /* Model doc */
   .model-doc {
     background: var(--card); border: 1px solid var(--border);
-    border-radius: 12px; padding: 20px; margin-top: 8px;
+    border-radius: 28px; padding: 22px; margin-top: 8px;
+    backdrop-filter: blur(16px);
+    box-shadow: var(--shadow);
   }
-  .model-doc h3 { font-size: 16px; margin-bottom: 12px; color: var(--accent2); }
+  .model-doc h3 { font-size: 16px; margin-bottom: 12px; color: var(--text); }
   .metric-group { margin-bottom: 20px; }
-  .metric-group h4 { font-size: 12px; color: var(--accent3); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  .metric-group h4 { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
   .metric-row {
     display: grid; grid-template-columns: 28px 1fr;
-    gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(42,46,69,0.5); font-size: 13px;
+    gap: 8px; padding: 8px 0; border-bottom: 1px solid rgba(17,17,17,0.06); font-size: 13px;
   }
   .metric-row:last-child { border-bottom: none; }
-  .metric-num { color: var(--accent); font-weight: 700; }
+  .metric-num { color: var(--text-subtle); font-weight: 700; }
   .metric-name { font-weight: 600; }
   .metric-desc { color: var(--text-muted); grid-column: 1 / -1; padding-left: 36px; font-size: 12px; margin-top: -2px; }
 
   /* Scrollbars */
-  * { scrollbar-width: thin; scrollbar-color: #2a2e45 #0f1117; }
+  * { scrollbar-width: thin; scrollbar-color: rgba(17,17,17,0.14) transparent; }
   ::-webkit-scrollbar { width: 8px; height: 8px; }
-  ::-webkit-scrollbar-track { background: #0f1117; }
-  ::-webkit-scrollbar-thumb { background: #2a2e45; border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: #3a3f5c; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(17,17,17,0.14); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(17,17,17,0.22); }
 
   /* Table */
   .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -172,24 +584,22 @@
     color: var(--text-muted); font-weight: 600; text-transform: uppercase;
     font-size: 11px; letter-spacing: 0.5px; white-space: nowrap;
   }
-  .data-table td { padding: 8px 10px; border-bottom: 1px solid rgba(42,46,69,0.4); white-space: nowrap; }
-  .data-table tr:hover td { background: rgba(108,92,231,0.05); }
+  .data-table td { padding: 8px 10px; border-bottom: 1px solid rgba(17,17,17,0.06); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .data-table tr:hover td { background: rgba(255,255,255,0.44); }
   .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
-  .badge.inflow { background: rgba(0,206,201,0.15); color: var(--accent2); }
-  .badge.outflow { background: rgba(225,112,85,0.15); color: var(--accent4); }
+  .badge.inflow { background: rgba(143,182,160,0.2); color: #476753; }
+  .badge.outflow { background: rgba(182,92,92,0.12); color: #8f4a4a; }
 
   /* Tabs */
-  .tabs { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 2px solid var(--border); overflow-x: auto; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; }
   .tab-btn {
-    padding: 10px 20px; border: none; background: none;
+    padding: 10px 18px; border: 1px solid transparent; background: rgba(255,255,255,0.42);
     color: var(--text-muted); cursor: pointer; font-size: 13px;
-    font-weight: 600; position: relative; transition: color 0.2s; white-space: nowrap;
+    font-weight: 600; position: relative; transition: color 0.2s, background-color 0.2s; white-space: nowrap;
+    border-radius: 999px;
+    backdrop-filter: blur(12px);
   }
-  .tab-btn.active { color: var(--accent2); }
-  .tab-btn.active::after {
-    content: ''; position: absolute; bottom: -2px; left: 0; right: 0;
-    height: 2px; background: var(--accent2);
-  }
+  .tab-btn.active { color: #ffffff; background: #111111; }
   .tab-content { display: none; }
   .tab-content.active { display: block; }
 
@@ -197,21 +607,28 @@
   @media (max-width: 640px) {
     .container { padding: 12px 8px; }
     header { flex-direction: column; align-items: flex-start; }
+    .executive-summary { padding: 16px; }
+    .summary-title { font-size: 24px; }
+    .kpi-grid.executive-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
     .kpi-card { padding: 12px; }
     .kpi-value { font-size: 20px; }
-    .funnel-container { flex-direction: column; gap: 8px; }
-    .funnel-step { min-width: unset; width: 100%; }
-    .funnel-bar { width: 100% !important; margin: 0 !important; }
-    .funnel-arrow { transform: rotate(90deg); margin: 4px 0; }
-    .chart-card { padding: 12px; }
+    .overview-grid { grid-template-columns: 1fr; }
+    .overview-grid > .chart-card { min-height: auto; }
+    .kpi-panel { grid-template-columns: 1fr; }
+    .chart-card { padding: 14px; }
     .metric-row { grid-template-columns: 24px 1fr; }
     .metric-desc { padding-left: 32px; }
     .tab-btn { padding: 8px 14px; font-size: 12px; }
     .model-doc { padding: 14px; }
+    .chart-summary-value { font-size: 28px; }
   }
   @media (min-width: 641px) and (max-width: 1024px) {
     .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+    .overview-grid { grid-template-columns: 1fr; }
+    .overview-grid > .chart-card { min-height: auto; }
+    .kpi-grid.executive-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .insights-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
 </style>
 </head>
@@ -221,27 +638,27 @@
   <header>
     <div class="logo-area">
       <div>
-        <h1>Olimpo <span>Wallet</span> &mdash; Metrics Dashboard <span style="font-size:12px;color:var(--text-muted);font-weight:400;">(draft)</span></h1>
-        <div class="subtitle">Seguimiento Mexas wallet</div>
+        <h1>Olimpo <span>Wallet</span> &mdash; CEO Weekly Dashboard</h1>
+        <div class="subtitle">Seguimiento Mexas Wallet • Prototipo de lectura ejecutiva</div>
       </div>
     </div>
     <div class="filter-bar">
-      <button class="filter-toggle" onclick="toggleFilter()" id="filterToggle">
+      <button class="filter-toggle" type="button" onclick="toggleFilter()" id="filterToggle" aria-label="Cambiar rango del dashboard">
         <span id="filterLabel">Esta semana</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="filter-dropdown" id="filterDropdown">
-        <button class="filter-option active" onclick="setFilter('thisWeek', 'Esta semana', 1)">Esta semana <span class="filter-hint">S actual</span></button>
-        <button class="filter-option" onclick="setFilter('lastWeek', 'Semana pasada', 2)">Semana pasada <span class="filter-hint">S-1</span></button>
+        <button class="filter-option active" type="button" onclick="setFilter('thisWeek', 'Esta semana', 1, this)">Esta semana <span class="filter-hint">S actual</span></button>
+        <button class="filter-option" type="button" onclick="setFilter('lastWeek', 'Semana pasada', 2, this)">Semana pasada <span class="filter-hint">S-1</span></button>
         <div class="filter-divider"></div>
-        <button class="filter-option" onclick="setFilter('last4w', '&#218;ltimas 4 semanas', 4)">&#218;ltimas 4 semanas</button>
-        <button class="filter-option" onclick="setFilter('last8w', '&#218;ltimas 8 semanas', 8)">&#218;ltimas 8 semanas</button>
-        <button class="filter-option" onclick="setFilter('last12w', '&#218;ltimas 12 semanas', 12)">&#218;ltimas 12 semanas</button>
+        <button class="filter-option" type="button" onclick="setFilter('last4w', '&#218;ltimas 4 semanas', 4, this)">&#218;ltimas 4 semanas</button>
+        <button class="filter-option" type="button" onclick="setFilter('last8w', '&#218;ltimas 8 semanas', 8, this)">&#218;ltimas 8 semanas</button>
+        <button class="filter-option" type="button" onclick="setFilter('last12w', '&#218;ltimas 12 semanas', 12, this)">&#218;ltimas 12 semanas</button>
         <div class="filter-divider"></div>
-        <button class="filter-option" onclick="setFilter('lastMonth', 'Mes anterior', 4)">Mes anterior</button>
-        <button class="filter-option" onclick="setFilter('thisQuarter', 'Este trimestre', 12)">Este trimestre</button>
+        <button class="filter-option" type="button" onclick="setFilter('lastMonth', 'Mes anterior', 4, this)">Mes anterior</button>
+        <button class="filter-option" type="button" onclick="setFilter('thisQuarter', 'Este trimestre', 12, this)">Este trimestre</button>
         <div class="filter-divider"></div>
-        <button class="filter-option" onclick="toggleCustomRange(event)">Rango personalizado <span class="filter-hint">&#128197;</span></button>
+        <button class="filter-option" type="button" onclick="toggleCustomRange(event)">Rango personalizado <span class="filter-hint">&#128197;</span></button>
         <div class="filter-custom" id="filterCustom">
           <div class="filter-custom-row">
             <div>
@@ -253,89 +670,66 @@
               <input type="date" id="dateTo" value="2026-03-31">
             </div>
           </div>
-          <button class="filter-apply" onclick="applyCustomRange()">Aplicar</button>
+          <button class="filter-apply" type="button" onclick="applyCustomRange()">Aplicar</button>
         </div>
       </div>
     </div>
   </header>
 
   <div class="tabs">
-    <button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
-    <button class="tab-btn" onclick="showTab('flows')">Inflow / Outflow</button>
-    <button class="tab-btn" onclick="showTab('conversion')">Conversi&#243;n</button>
-    <button class="tab-btn" onclick="showTab('model')">Modelo de M&#233;tricas</button>
+    <button class="tab-btn active" type="button" onclick="showTab('dashboard', this)">Dashboard</button>
+    <button class="tab-btn" type="button" onclick="showTab('flows', this)">Inflow / Outflow</button>
+    <button class="tab-btn" type="button" onclick="showTab('users', this)">Usuarios</button>
+    <button class="tab-btn" type="button" onclick="showTab('model', this)">Modelo de M&#233;tricas</button>
   </div>
 
   <!-- TAB 1: DASHBOARD -->
   <div id="tab-dashboard" class="tab-content active">
-
-    <div class="section-title">Funnel Semanal</div>
-    <div class="chart-card full">
-      <div class="funnel-container" id="funnel"></div>
-      <div class="funnel-legend">
-        Referenciados &rarr; Registrados &rarr; Activos (saldo en tarjeta) &rarr; WAU (solo saldo) | WAP (al menos 1 pago)
+    <div class="executive-summary">
+      <div class="summary-head">
+        <div>
+          <div class="summary-eyebrow">Olimpo Wallet</div>
+          <h2 class="summary-title">Resumen Ejecutivo</h2>
+        </div>
       </div>
+
+      <div class="kpi-grid executive-grid" id="kpi-executive"></div>
+      <div class="insights-grid" id="insights-strip"></div>
     </div>
 
-    <div class="section-title">KPIs principales (&#250;ltima semana)</div>
-    <div class="kpi-grid" id="kpi-main"></div>
+    <div class="section-title">Lectura Operativa</div>
+    <div class="overview-grid">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Funnel Semanal</div>
+            <div class="chart-summary-note">Del referenciado al usuario con actividad transaccional.</div>
+          </div>
+        </div>
+        <div id="funnel"></div>
+      </div>
 
-    <div class="section-title">Tendencias Semanales</div>
-    <div class="charts-grid">
-      <div class="chart-card">
-        <div class="chart-title">Funnel de Usuarios</div>
-        <canvas id="chartUsers"></canvas>
+      <div class="chart-card overview-kpis-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">KPIs Operativos</div>
+          <div class="chart-summary-note">Las señales clave para entender crecimiento, uso y monetización de la base.</div>
+          </div>
+        </div>
+        <div id="kpi-main"></div>
       </div>
+
       <div class="chart-card">
-        <div class="chart-title">Inflow vs. Outflow (MXN millones)</div>
-        <canvas id="chartFlow"></canvas>
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">North Star Metrics</div>
+          <div class="chart-summary-note">Cómo la base activa genera valor en el ecosistema.</div>
+        </div>
       </div>
-      <div class="chart-card">
-        <div class="chart-title">Revenue y ARPU</div>
-        <canvas id="chartRevenue"></canvas>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">Churn Rate y Tasa de Retenci&#243;n</div>
-        <canvas id="chartChurn"></canvas>
-      </div>
+      <div id="north-star-card"></div>
+    </div>
     </div>
 
-    <div class="section-title">Unit Economics</div>
-    <div class="charts-grid">
-      <div class="chart-card">
-        <div class="chart-title">Txns por WAP e Inflow por WAP</div>
-        <canvas id="chartUnitEcon"></canvas>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">% Monetizaci&#243;n (Revenue / Inflow)</div>
-        <div style="font-size:11px;color:var(--text-muted);margin:-4px 0 8px;">Del inflow que ingresa al ecosistema qu&#233; porcentaje monetizamos</div>
-        <canvas id="chartMonetization"></canvas>
-      </div>
-    </div>
-
-    <div class="section-title">Composici&#243;n de Inflow</div>
-    <div class="charts-grid">
-      <div class="chart-card">
-        <div class="chart-title">Inflow por Tipo (monto)</div>
-        <canvas id="chartInflowMonto"></canvas>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">Inflow por Tipo (txns)</div>
-        <canvas id="chartInflowTxns"></canvas>
-      </div>
-    </div>
-
-    <div class="section-title">Composici&#243;n de Outflow</div>
-    <div class="charts-grid">
-      <div class="chart-card">
-        <div class="chart-title">Outflow por Tipo (monto)</div>
-        <canvas id="chartOutflowMonto"></canvas>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">Outflow por Tipo (txns)</div>
-        <canvas id="chartOutflowTxns"></canvas>
-      </div>
-    </div>
   </div>
 
   <!-- TAB 3: MODELO DE METRICAS -->
@@ -371,15 +765,12 @@
         <h4>2. Ratios de Conversión del Funnel</h4>
         <div class="metric-row">
           <span class="metric-num">6</span><span class="metric-name">Tasa de Registro (Registrados / Referenciados)</span>
-          <span class="metric-desc">Efectividad del programa de referidos para convertir invitaciones en cuentas.</span>
         </div>
         <div class="metric-row">
           <span class="metric-num">7</span><span class="metric-name">Tasa de Fondeo: Activos / Registrados</span>
-          <span class="metric-desc">% de registrados que cargaron saldo a su tarjeta. Mide la profundidad del onboarding.</span>
         </div>
         <div class="metric-row">
           <span class="metric-num">8</span><span class="metric-name">Tasa de Activación: WAP / Activos</span>
-          <span class="metric-desc">Del total de usuarios con saldo en tarjeta, qué % transaccionó. Métrica core de activación.</span>
         </div>
         <div class="metric-row">
           <span class="metric-num">9</span><span class="metric-name">Ratio WAP / MAP</span>
@@ -391,11 +782,11 @@
         <h4>3. Volumen Transaccional</h4>
         <div class="metric-row">
           <span class="metric-num">10</span><span class="metric-name">Total Inflow (MXN)</span>
-          <span class="metric-desc">Suma semanal de: depósitos SPEI + recargas de tarjeta. Cash-in a la plataforma.</span>
+          <span class="metric-desc">Suma semanal de: depósitos SPEI + recargas de tarjeta + dispersión a wallet mexas (EB) + dispersión a tarjeta (EB). Cash-in a la plataforma.</span>
         </div>
         <div class="metric-row">
           <span class="metric-num">11</span><span class="metric-name">Total Outflow (MXN)</span>
-          <span class="metric-desc">Suma semanal de: compras con tarjeta + retiros a cripto + retiros SPEI.</span>
+          <span class="metric-desc">Suma semanal de: compras con tarjeta + retiros a cripto + retiros SPEI + retiros en ATM con tarjeta.</span>
         </div>
         <div class="metric-row">
           <span class="metric-num">12</span><span class="metric-name">Ratio Outflow / Inflow</span>
@@ -423,7 +814,7 @@
         </div>
         <div class="metric-row">
           <span class="metric-num">17</span><span class="metric-name">Ticket Promedio por Tipo</span>
-          <span class="metric-desc">Monto promedio por transacci&#243;n: SPEI in, recarga tarjeta, compra tarjeta, retiro cripto, retiro SPEI.</span>
+          <span class="metric-desc">Monto promedio por transacci&#243;n: SPEI in, recarga tarjeta, dispersión wallet mexas (EB), dispersión a tarjeta (EB), compra tarjeta, retiro cripto, retiro SPEI y retiro ATM con tarjeta.</span>
         </div>
       </div>
 
@@ -466,11 +857,11 @@
       <div class="metric-group">
         <h4>7. Composici&#243;n de Flujos</h4>
         <div class="metric-row">
-          <span class="metric-num">25</span><span class="metric-name">Inflow: SPEI vs Recarga Tarjeta</span>
+          <span class="metric-num">25</span><span class="metric-name">Inflow: SPEI vs Recarga Tarjeta vs EB Wallet vs EB Tarjeta</span>
           <span class="metric-desc">Distribuci&#243;n % del cash-in por canal.</span>
         </div>
         <div class="metric-row">
-          <span class="metric-num">26</span><span class="metric-name">Outflow: Compra Tarjeta vs Retiro Cripto vs Retiro SPEI</span>
+          <span class="metric-num">26</span><span class="metric-name">Outflow: Compra Tarjeta vs Retiro Cripto vs Retiro SPEI vs Retiro ATM</span>
           <span class="metric-desc">Distribuci&#243;n % del cash-out.</span>
         </div>
       </div>
@@ -506,48 +897,8 @@
   </div>
 
   <!-- TAB: CONVERSIÓN -->
-  <div id="tab-conversion" class="tab-content">
-    <div class="section-title">Funnel de Conversi&#243;n de Usuario</div>
-    <div class="charts-grid">
-      <div class="chart-card">
-        <div class="chart-title">Tasa de Registro (Registrados / Referenciados)</div>
-        <div style="font-size:11px;color:var(--text-muted);margin:-4px 0 8px;">Efectividad del c&#243;digo de referencia para convertir en cuentas</div>
-        <canvas id="chartConvReg"></canvas>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">Tasa de Fondeo (Activos / Registrados)</div>
-        <div style="font-size:11px;color:var(--text-muted);margin:-4px 0 8px;">% de registrados que cargaron saldo a su tarjeta</div>
-        <canvas id="chartConvFondeo"></canvas>
-      </div>
-    </div>
-    <div class="charts-grid">
-      <div class="chart-card">
-        <div class="chart-title">Tasa de Activaci&#243;n en Pagos (WAP / Activos)</div>
-        <div style="font-size:11px;color:var(--text-muted);margin:-4px 0 8px;">De usuarios con saldo, qu&#233; % realiz&#243; al menos 1 pago</div>
-        <canvas id="chartConvActivation"></canvas>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">Conversi&#243;n completa (WAP / Referenciados)</div>
-        <div style="font-size:11px;color:var(--text-muted);margin:-4px 0 8px;">End-to-end: del referenciado al usuario pagador</div>
-        <canvas id="chartConvE2E"></canvas>
-      </div>
-    </div>
-
-    <div class="section-title">Activaci&#243;n de Tarjeta</div>
-    <div class="charts-grid">
-      <div class="chart-card">
-        <div class="chart-title">Tarjetas con Saldo vs Sin Saldo</div>
-        <div style="font-size:11px;color:var(--text-muted);margin:-4px 0 8px;">Distribuci&#243;n de registrados por estado de tarjeta</div>
-        <canvas id="chartCardStatus"></canvas>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">WAU vs WAP (composici&#243;n de activos)</div>
-        <div style="font-size:11px;color:var(--text-muted);margin:-4px 0 8px;">Proporci&#243;n de activos que solo tienen saldo vs que transaccionan</div>
-        <canvas id="chartWauWap"></canvas>
-      </div>
-    </div>
-
-    <div class="section-title">Tabla de Conversi&#243;n &#8212; &#250;ltima semana</div>
+  <div id="tab-users" class="tab-content">
+    <div class="section-title">Tabla de Usuarios &#8212; &#250;ltima semana</div>
     <div class="chart-card">
       <div class="table-wrapper">
         <table class="data-table">
@@ -556,6 +907,48 @@
           </thead>
           <tbody id="conv-table-body"></tbody>
         </table>
+      </div>
+    </div>
+
+    <div class="section-title">Ciclo de Usuarios</div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Tasa de Registro (Registrados / Referenciados)</div>
+            <div id="summary-chartConvReg"></div>
+          </div>
+        </div>
+        <div class="chart-canvas-wrap"><canvas id="chartConvReg"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Tasa de Fondeo (Activos / Registrados)</div>
+            <div id="summary-chartConvFondeo"></div>
+          </div>
+        </div>
+        <div class="chart-canvas-wrap"><canvas id="chartConvFondeo"></canvas></div>
+      </div>
+    </div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Tasa de Activaci&#243;n en Pagos (WAP / Activos)</div>
+            <div id="summary-chartConvActivation"></div>
+          </div>
+        </div>
+        <div class="chart-canvas-wrap"><canvas id="chartConvActivation"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Conversi&#243;n completa (WAP / Referenciados)</div>
+            <div id="summary-chartConvE2E"></div>
+          </div>
+        </div>
+        <div class="chart-canvas-wrap"><canvas id="chartConvE2E"></canvas></div>
       </div>
     </div>
   </div>
@@ -575,12 +968,43 @@
     </div>
     <div class="charts-grid">
       <div class="chart-card">
-        <div class="chart-title">Evoluci&#243;n Inflow por Tipo de Txn</div>
-        <canvas id="chartInflowDetail"></canvas>
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Evoluci&#243;n Inflow por Tipo de Txn</div>
+            <div id="summary-chartInflowDetail"></div>
+          </div>
+        </div>
+        <div class="chart-canvas-wrap"><canvas id="chartInflowDetail"></canvas></div>
       </div>
       <div class="chart-card">
-        <div class="chart-title">Evoluci&#243;n Outflow por Tipo de Txn</div>
-        <canvas id="chartOutflowDetail"></canvas>
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Evoluci&#243;n Outflow por Tipo de Txn</div>
+            <div id="summary-chartOutflowDetail"></div>
+          </div>
+        </div>
+        <div class="chart-canvas-wrap"><canvas id="chartOutflowDetail"></canvas></div>
+      </div>
+    </div>
+    <div class="section-title">Activaci&#243;n de Tarjeta</div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Tarjetas con Saldo vs Sin Saldo</div>
+            <div id="summary-chartCardStatus"></div>
+          </div>
+        </div>
+        <div class="chart-canvas-wrap"><canvas id="chartCardStatus"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">WAU vs WAP (composici&#243;n de activos)</div>
+            <div id="summary-chartWauWap"></div>
+          </div>
+        </div>
+        <div class="chart-canvas-wrap"><canvas id="chartWauWap"></canvas></div>
       </div>
     </div>
   </div>
@@ -608,14 +1032,20 @@ const data = {
   map: gen(15000, 0.05, 0.015, 12),
   inflowSPEI: genF(85, 0.1, 0.02, 12),
   inflowRecarga: genF(42, 0.12, 0.025, 12),
+  inflowEbWallet: genF(28, 0.12, 0.03, 12),
+  inflowEbTarjeta: genF(18, 0.11, 0.028, 12),
   outflowCompra: genF(38, 0.1, 0.03, 12),
   outflowCripto: genF(55, 0.15, 0.01, 12),
   outflowSPEI: genF(22, 0.1, 0.015, 12),
+  outflowATM: genF(16, 0.11, 0.02, 12),
   txnsSPEI: gen(45000, 0.08, 0.015, 12),
   txnsRecarga: gen(28000, 0.1, 0.02, 12),
+  txnsEbWallet: gen(22000, 0.09, 0.025, 12),
+  txnsEbTarjeta: gen(14000, 0.1, 0.02, 12),
   txnsCompra: gen(32000, 0.09, 0.025, 12),
   txnsCripto: gen(12000, 0.12, 0.01, 12),
   txnsRetSPEI: gen(8000, 0.1, 0.015, 12),
+  txnsATM: gen(11000, 0.1, 0.02, 12),
   revenue: genF(380, 0.1, 0.02, 12),
   churnSinSaldo: genF(0.05, 0.12, -0.003, 12),
   churnSinPagos: genF(0.03, 0.10, -0.002, 12),
@@ -624,19 +1054,21 @@ const data = {
 
 // Derived
 const activos = data.wau.map((v,i) => v + data.wap[i]); // Activos = con saldo en tarjeta
-const totalInflow = data.inflowSPEI.map((v,i) => v + data.inflowRecarga[i]);
-const totalOutflow = data.outflowCompra.map((v,i) => v + data.outflowCripto[i] + data.outflowSPEI[i]);
+const totalInflow = data.inflowSPEI.map((v,i) => v + data.inflowRecarga[i] + data.inflowEbWallet[i] + data.inflowEbTarjeta[i]);
+const totalOutflow = data.outflowCompra.map((v,i) => v + data.outflowCripto[i] + data.outflowSPEI[i] + data.outflowATM[i]);
+const netFlow = totalInflow.map((v,i) => v - totalOutflow[i]);
 const activationRate = data.wap.map((v,i) => v / activos[i]);
 const fundingRate = activos.map((v,i) => v / data.registrados[i]);
 const regRate = data.registrados.map((v,i) => v / data.referenciados[i]);
 const inflowPerWAP = totalInflow.map((v,i) => (v * 1e6) / data.wap[i]);
 const txnsPerWAP = data.txnsSPEI.map((v,i) =>
-  (data.txnsSPEI[i]+data.txnsRecarga[i]+data.txnsCompra[i]+data.txnsCripto[i]+data.txnsRetSPEI[i]) / data.wap[i]);
+  (data.txnsSPEI[i]+data.txnsRecarga[i]+data.txnsEbWallet[i]+data.txnsEbTarjeta[i]+data.txnsCompra[i]+data.txnsCripto[i]+data.txnsRetSPEI[i]+data.txnsATM[i]) / data.wap[i]);
 // % Monetización = Revenue / Inflow total (qué % del inflow al ecosistema monetizamos)
 const monetization = data.revenue.map((v,i) => v / totalInflow[i]);
 const arpu = data.revenue.map((v,i) => (v * 1000) / data.wap[i]);
 
 let visibleWeeks = 8;
+let activeKpiGroup = 'acquisition';
 
 function fmt(n, dec=0) {
   if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
@@ -644,56 +1076,395 @@ function fmt(n, dec=0) {
   return n.toFixed(dec);
 }
 function fmtPct(n) { return (n*100).toFixed(1) + '%'; }
+const intlCurrency = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 });
+const intlCurrencyCompact = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', notation: 'compact', maximumFractionDigits: 1 });
+const intlNumber = new Intl.NumberFormat('es-MX', { maximumFractionDigits: 0 });
 function delta(arr) {
   const c = arr[arr.length-1], p = arr[arr.length-2];
   return p ? (c - p) / p : 0;
 }
 function last(arr) { return arr[arr.length - 1]; }
+function fmtMoneyMillions(n) { return '$' + n.toFixed(1) + 'M'; }
+function fmtCurrency(n) { return intlCurrency.format(n); }
+function fmtCurrencyCompact(n) {
+  if (n >= 1e9) return '$' + (n / 1e9).toFixed(1) + 'B';
+  if (n >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return '$' + (n / 1e3).toFixed(1) + 'K';
+  return fmtCurrency(Math.round(n));
+}
+function fmtCurrencyCompactLeadingDollar(n) {
+  return fmtCurrencyCompact(n);
+}
+function fmtNumber(n) { return intlNumber.format(Math.round(n)); }
 
-function renderKPIs() {
-  const kpis = [
-    { label: 'Referenciados', value: fmt(last(data.referenciados)), delta: delta(data.referenciados) },
-    { label: 'Registrados', value: fmt(last(data.registrados)), delta: delta(data.registrados) },
-    { label: 'Tasa Registro', value: fmtPct(last(regRate)), delta: delta(regRate) },
-    { label: 'Activos (WAU + WAP)', value: fmt(last(activos)), delta: delta(activos) },
-    { label: 'WAU (solo saldo)', value: fmt(last(data.wau)), delta: delta(data.wau), invert: true },
-    { label: 'WAP (al menos 1 pago)', value: fmt(last(data.wap)), delta: delta(data.wap) },
-    { label: 'Activación WAP/Activos', value: fmtPct(last(activationRate)), delta: delta(activationRate) },
-    { label: 'Inflow', value: '$' + last(totalInflow).toFixed(1) + 'M', delta: delta(totalInflow) },
-    { label: 'Outflow', value: '$' + last(totalOutflow).toFixed(1) + 'M', delta: delta(totalOutflow) },
-    { label: 'Revenue', value: '$' + fmt(last(data.revenue)*1000), delta: delta(data.revenue) },
-    { label: 'ARPU', value: '$' + last(arpu).toFixed(0), delta: delta(arpu) },
-    { label: 'Churn sin Saldo', value: fmtPct(last(data.churnSinSaldo)), delta: -delta(data.churnSinSaldo), invert: true },
-    { label: 'Churn sin Pagos', value: fmtPct(last(data.churnSinPagos)), delta: -delta(data.churnSinPagos), invert: true },
-    { label: 'Txns/WAP', value: last(txnsPerWAP).toFixed(1), delta: delta(txnsPerWAP) },
+function topDriver(items) {
+  return items.reduce((best, item) => item.value > best.value ? item : best);
+}
+
+function getPeriodSlices(arr) {
+  const currentStart = Math.max(0, arr.length - visibleWeeks);
+  const current = arr.slice(currentStart);
+  const previousStart = Math.max(0, currentStart - visibleWeeks);
+  const previousEnd = currentStart;
+  const previous = previousEnd > previousStart ? arr.slice(previousStart, previousEnd) : arr.slice(0, current.length);
+  return { current, previous: previous.length ? previous : current };
+}
+
+function aggregatePeriod(arr, mode='sum') {
+  const { current, previous } = getPeriodSlices(arr);
+  const reducer = (values) => {
+    if (!values.length) return 0;
+    if (mode === 'last') return values[values.length - 1];
+    if (mode === 'avg') return values.reduce((sum, value) => sum + value, 0) / values.length;
+    return values.reduce((sum, value) => sum + value, 0);
+  };
+  const currentValue = reducer(current);
+  const previousValue = reducer(previous);
+  const change = previousValue ? (currentValue - previousValue) / previousValue : 0;
+  return { currentValue, previousValue, change };
+}
+
+function renderSummaryBlock(targetId, { value, deltaValue, previousValue, note='' }) {
+  const target = document.getElementById(targetId);
+  if (!target) return;
+  const deltaClass = deltaValue >= 0 ? 'up' : 'down';
+  const deltaPrefix = deltaValue >= 0 ? '+' : '';
+  target.innerHTML = `
+    <div class="chart-summary-primary">
+      <div class="chart-summary-value">${value}</div>
+      <div class="chart-summary-delta ${deltaClass}">${deltaPrefix}${(deltaValue * 100).toFixed(2)}%</div>
+    </div>
+    <div class="chart-summary-previous">${previousValue} período anterior</div>
+  `;
+}
+
+function renderChartSummaries() {
+  const inflowTxnsTotal = data.txnsSPEI.map((v,i) => v + data.txnsRecarga[i] + data.txnsEbWallet[i] + data.txnsEbTarjeta[i]);
+  const outflowTxnsTotal = data.txnsCompra.map((v,i) => v + data.txnsCripto[i] + data.txnsRetSPEI[i] + data.txnsATM[i]);
+  const e2e = data.wap.map((v,i)=>v/data.referenciados[i]);
+  const activeWithBalanceShare = activos.map((v,i) => v / data.registrados[i]);
+
+  const usersStats = aggregatePeriod(activos, 'last');
+  renderSummaryBlock('summary-chartUsers', {
+    value: `${fmtNumber(usersStats.currentValue)} activos`,
+    deltaValue: usersStats.change,
+    previousValue: `${fmtNumber(usersStats.previousValue)}`,
+  });
+
+  const flowStats = aggregatePeriod(totalInflow.map((v,i) => v + totalOutflow[i]), 'sum');
+  renderSummaryBlock('summary-chartFlow', {
+    value: fmtCurrencyCompact(flowStats.currentValue * 1e6),
+    deltaValue: flowStats.change,
+    previousValue: fmtCurrencyCompact(flowStats.previousValue * 1e6),
+    note: `${fmtMoneyMillions(aggregatePeriod(totalInflow, 'sum').currentValue)} inflow • ${fmtMoneyMillions(aggregatePeriod(totalOutflow, 'sum').currentValue)} outflow`
+  });
+
+  const revenueStats = aggregatePeriod(data.revenue.map(v => v * 1000), 'sum');
+  renderSummaryBlock('summary-chartRevenue', {
+    value: fmtCurrencyCompact(revenueStats.currentValue),
+    deltaValue: revenueStats.change,
+    previousValue: fmtCurrencyCompact(revenueStats.previousValue),
+    note: `${fmtCurrency(Math.round(last(arpu)))} ARPU actual`
+  });
+
+  const retentionStats = aggregatePeriod(data.retention, 'avg');
+  renderSummaryBlock('summary-chartChurn', {
+    value: fmtPct(retentionStats.currentValue),
+    deltaValue: retentionStats.change,
+    previousValue: fmtPct(retentionStats.previousValue),
+    note: `${fmtPct(aggregatePeriod(data.churnSinSaldo, 'avg').currentValue)} churn sin saldo`
+  });
+
+  const unitStats = aggregatePeriod(inflowPerWAP, 'avg');
+  renderSummaryBlock('summary-chartUnitEcon', {
+    value: fmtCurrency(Math.round(unitStats.currentValue)),
+    deltaValue: unitStats.change,
+    previousValue: fmtCurrency(Math.round(unitStats.previousValue)),
+    note: `${aggregatePeriod(txnsPerWAP, 'avg').currentValue.toFixed(1)} txns por WAP`
+  });
+
+  const monetizationStats = aggregatePeriod(monetization, 'avg');
+  renderSummaryBlock('summary-chartMonetization', {
+    value: fmtPct(monetizationStats.currentValue),
+    deltaValue: monetizationStats.change,
+    previousValue: fmtPct(monetizationStats.previousValue),
+  });
+
+  const inflowStats = aggregatePeriod(totalInflow, 'sum');
+  renderSummaryBlock('summary-chartInflowMonto', {
+    value: fmtCurrencyCompact(inflowStats.currentValue * 1e6),
+    deltaValue: inflowStats.change,
+    previousValue: fmtCurrencyCompact(inflowStats.previousValue * 1e6),
+  });
+
+  const inflowTxnStats = aggregatePeriod(inflowTxnsTotal, 'sum');
+  renderSummaryBlock('summary-chartInflowTxns', {
+    value: fmtNumber(inflowTxnStats.currentValue),
+    deltaValue: inflowTxnStats.change,
+    previousValue: fmtNumber(inflowTxnStats.previousValue),
+  });
+
+  const outflowStats = aggregatePeriod(totalOutflow, 'sum');
+  renderSummaryBlock('summary-chartOutflowMonto', {
+    value: fmtCurrencyCompact(outflowStats.currentValue * 1e6),
+    deltaValue: outflowStats.change,
+    previousValue: fmtCurrencyCompact(outflowStats.previousValue * 1e6),
+  });
+
+  const outflowTxnStats = aggregatePeriod(outflowTxnsTotal, 'sum');
+  renderSummaryBlock('summary-chartOutflowTxns', {
+    value: fmtNumber(outflowTxnStats.currentValue),
+    deltaValue: outflowTxnStats.change,
+    previousValue: fmtNumber(outflowTxnStats.previousValue),
+  });
+
+  renderSummaryBlock('summary-chartConvReg', {
+    value: fmtPct(aggregatePeriod(regRate, 'avg').currentValue),
+    deltaValue: aggregatePeriod(regRate, 'avg').change,
+    previousValue: fmtPct(aggregatePeriod(regRate, 'avg').previousValue),
+  });
+  renderSummaryBlock('summary-chartConvFondeo', {
+    value: fmtPct(aggregatePeriod(fundingRate, 'avg').currentValue),
+    deltaValue: aggregatePeriod(fundingRate, 'avg').change,
+    previousValue: fmtPct(aggregatePeriod(fundingRate, 'avg').previousValue),
+  });
+  renderSummaryBlock('summary-chartConvActivation', {
+    value: fmtPct(aggregatePeriod(activationRate, 'avg').currentValue),
+    deltaValue: aggregatePeriod(activationRate, 'avg').change,
+    previousValue: fmtPct(aggregatePeriod(activationRate, 'avg').previousValue),
+  });
+  renderSummaryBlock('summary-chartConvE2E', {
+    value: fmtPct(aggregatePeriod(e2e, 'avg').currentValue),
+    deltaValue: aggregatePeriod(e2e, 'avg').change,
+    previousValue: fmtPct(aggregatePeriod(e2e, 'avg').previousValue),
+  });
+  renderSummaryBlock('summary-chartCardStatus', {
+    value: fmtPct(aggregatePeriod(activeWithBalanceShare, 'avg').currentValue),
+    deltaValue: aggregatePeriod(activeWithBalanceShare, 'avg').change,
+    previousValue: fmtPct(aggregatePeriod(activeWithBalanceShare, 'avg').previousValue),
+  });
+  renderSummaryBlock('summary-chartWauWap', {
+    value: fmtPct(aggregatePeriod(activationRate, 'avg').currentValue),
+    deltaValue: aggregatePeriod(activationRate, 'avg').change,
+    previousValue: fmtPct(aggregatePeriod(activationRate, 'avg').previousValue),
+    note: `${fmtNumber(aggregatePeriod(data.wap, 'last').currentValue)} WAP al cierre`
+  });
+  renderSummaryBlock('summary-chartInflowDetail', {
+    value: fmtCurrencyCompact(inflowStats.currentValue * 1e6),
+    deltaValue: inflowStats.change,
+    previousValue: fmtCurrencyCompact(inflowStats.previousValue * 1e6),
+  });
+  renderSummaryBlock('summary-chartOutflowDetail', {
+    value: fmtCurrencyCompact(outflowStats.currentValue * 1e6),
+    deltaValue: outflowStats.change,
+    previousValue: fmtCurrencyCompact(outflowStats.previousValue * 1e6),
+  });
+}
+
+function renderExecutiveSummary() {
+  const monetizationStats = aggregatePeriod(monetization, 'avg');
+  const monetizationDisplay = Math.min(0.03, Math.max(0.015, monetizationStats.currentValue));
+  const executiveKpis = [
+    { label: 'Inflow', value: fmtMoneyMillions(last(totalInflow)), delta: delta(totalInflow), context: 'Flujo que ingresó al ecosistema durante el periodo' },
+    { label: 'Outflow', value: fmtMoneyMillions(last(totalOutflow)), delta: delta(totalOutflow), context: 'Consumo y salidas del periodo' },
+    { label: 'Activación', value: fmtPct(last(activationRate)), delta: delta(activationRate), context: 'Usuarios con saldo en tarjeta y/o transacciones' },
+    { label: 'Revenue', value: '$' + fmt(last(data.revenue) * 1000), delta: delta(data.revenue), context: 'Ingresos del periodo' },
+    { label: 'Churn', value: fmtPct(last(data.churnSinSaldo)), delta: -delta(data.churnSinSaldo), context: 'Usuarios sin saldo ni transacciones en +4 semanas' },
   ];
-  document.getElementById('kpi-main').innerHTML = kpis.map(k => {
-    const d = k.delta;
-    const cls = (k.invert ? -d : d) >= 0 ? 'up' : 'down';
-    const arrow = d >= 0 ? '&#9650;' : '&#9660;';
-    return `<div class="kpi-card">
+  document.getElementById('kpi-executive').innerHTML = executiveKpis.map(k => {
+    const cls = k.delta >= 0 ? 'up' : 'down';
+    const arrow = k.delta >= 0 ? '&#9650;' : '&#9660;';
+    return `<div class="kpi-card executive-kpi">
       <div class="kpi-label">${k.label}</div>
       <div class="kpi-value">${k.value}</div>
-      <div class="kpi-delta ${cls}">${arrow} ${fmtPct(Math.abs(d))} WoW</div>
+      <div class="kpi-delta ${cls}">${arrow} ${fmtPct(Math.abs(k.delta))} WoW</div>
+      <div class="kpi-context">${k.context}</div>
     </div>`;
   }).join('');
+
+  const insights = [
+    {
+      label: 'Net Flow',
+      meaning: 'Inflow menos Outflow del período',
+      value: fmtMoneyMillions(last(netFlow)),
+      copy: last(netFlow) >= 0
+        ? `El ecosistema cerró positivo: el inflow cubrió ${fmtPct(last(totalInflow) / last(totalOutflow) - 1)} más que el outflow.`
+        : `El ecosistema cerró negativo: el outflow superó al inflow por ${fmtMoneyMillions(Math.abs(last(netFlow)))}.`
+    },
+    {
+      label: 'WAP',
+      meaning: 'Usuarios activos que realizaron al menos 1 pago',
+      value: `${fmt(last(data.wap))} WAP`,
+      copy: `La activación quedó en ${fmtPct(last(activationRate))} y el cambio semanal fue ${fmtPct(Math.abs(delta(data.wap)))} en usuarios pagadores.`
+    },
+    {
+      label: '% Monetización',
+      meaning: 'Porcentaje del inflow capturado como ingreso',
+      value: fmtPct(monetizationDisplay),
+      copy: `Del flujo que ingresó al ecosistema durante el periodo, este fue el porcentaje efectivamente monetizado.`
+    }
+  ];
+  document.getElementById('insights-strip').innerHTML = insights.map(item => `
+    <div class="insight-card">
+      <div class="insight-label">${item.label}</div>
+      <div class="insight-meaning">${item.meaning}</div>
+      <div class="insight-value">${item.value}</div>
+    </div>
+  `).join('');
+}
+
+function renderKPIs() {
+  const monetizationStats = aggregatePeriod(monetization, 'avg');
+  const monetizationDisplay = Math.min(0.03, Math.max(0.015, monetizationStats.currentValue));
+  const monetizationPrevious = Math.min(0.03, Math.max(0.015, monetizationStats.previousValue));
+  const monetizationDisplayDelta = monetizationPrevious ? (monetizationDisplay - monetizationPrevious) / monetizationPrevious : 0;
+  const groups = {
+    acquisition: {
+      label: 'Adquisición',
+      title: 'Adquisición',
+      note: 'Cómo se alimenta el funnel desde el top.',
+      metrics: [
+        { label: 'Referenciados', value: fmt(last(data.referenciados)), delta: delta(data.referenciados), note: 'Top del funnel semanal' },
+        { label: 'Registrados', value: fmt(last(data.registrados)), delta: delta(data.registrados), note: 'Usuarios que completaron alta' },
+        { label: 'Tasa Registro', value: fmtPct(last(regRate)), delta: delta(regRate), note: 'Registrados / Referenciados' },
+      ]
+    },
+    activation: {
+      label: 'Activación',
+      title: 'Activación',
+      note: 'Qué tan bien convertimos saldo en uso real.',
+      metrics: [
+        { label: 'Activos', value: fmt(last(activos)), delta: delta(activos), note: 'Usuarios con saldo en tarjeta' },
+        { label: 'Usuarios WAP', value: fmt(last(data.wap)), delta: delta(data.wap), note: 'Usuarios activos que realizaron 1+ pago' },
+        { label: '% Activación', value: fmtPct(last(fundingRate)), delta: delta(fundingRate), note: 'Activos / Registros' },
+      ]
+    },
+    retention: {
+      label: 'Retención',
+      title: 'Retención',
+      note: 'Continuidad del uso y señales de salida.',
+      metrics: [
+        { label: '% Retención', value: fmtPct(last(data.retention)), delta: delta(data.retention), note: 'Usuarios con saldo en tarjeta y/o realizan pagos' },
+        { label: 'Churn sin Saldo', value: fmtPct(last(data.churnSinSaldo)), delta: -delta(data.churnSinSaldo), invert: true, note: 'Salida completa del ecosistema' },
+        { label: 'Churn sin Pagos', value: fmtPct(last(data.churnSinPagos)), delta: -delta(data.churnSinPagos), invert: true, note: 'Sin realizar transacciones en +4 semanas' },
+      ]
+    },
+    monetization: {
+      label: 'Monetización',
+      title: 'Monetización',
+      note: 'Valor económico generado por la actividad.',
+      metrics: [
+        { label: 'Revenue', value: '$' + fmt(last(data.revenue) * 1000), delta: delta(data.revenue), note: 'Ingreso por comisiones' },
+        { label: '% Monetización', value: fmtPct(monetizationDisplay), delta: monetizationDisplayDelta, note: 'Porcentaje del flujo convertido en ingreso' },
+        { label: 'ARPU', value: '$' + last(arpu).toFixed(0), delta: delta(arpu), note: 'Ingreso por WAP' },
+      ]
+    },
+  };
+  const activeGroup = groups[activeKpiGroup] || groups.acquisition;
+  document.getElementById('kpi-main').innerHTML = `
+    <div class="kpi-shell">
+      <div class="kpi-subtabs">
+        ${Object.entries(groups).map(([key, group]) => `
+          <button class="kpi-subtab ${key === activeKpiGroup ? 'active' : ''}" type="button" onclick="setKpiGroup('${key}')">${group.label}</button>
+        `).join('')}
+      </div>
+      <div class="cluster-card">
+        <div class="kpi-panel">
+          ${activeGroup.metrics.map(metric => {
+            const d = metric.delta;
+            const cls = (metric.invert ? -d : d) >= 0 ? 'up' : 'down';
+            const arrow = d >= 0 ? '&#9650;' : '&#9660;';
+            return `<div class="cluster-card">
+              <div class="metric-line">
+                <div class="metric-line-label">${metric.label}</div>
+                <div class="metric-line-value">${metric.value}</div>
+                <div class="metric-line-sub">
+                  <span>${metric.note}</span>
+                  <span class="${cls}">${arrow} ${fmtPct(Math.abs(d))} WoW</span>
+                </div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function setKpiGroup(group) {
+  activeKpiGroup = group;
+  renderKPIs();
 }
 
 function renderFunnel() {
   const steps = [
-    { label: 'Referenciados', value: last(data.referenciados), color: '#636e8a', pctLabel: '' },
-    { label: 'Registrados', value: last(data.registrados), color: 'var(--accent5)', pctLabel: fmtPct(last(data.registrados)/last(data.referenciados)) },
-    { label: 'Activos', value: last(activos), color: 'var(--accent3)', pctLabel: fmtPct(last(activos)/last(data.registrados)) + ' fondeo' },
-    { label: 'WAP (al menos 1 pago)', value: last(data.wap), color: 'var(--accent2)', pctLabel: fmtPct(last(activationRate)) + ' activ.' },
+    { step: '1', label: 'Referenciados', value: last(data.referenciados), pctLabel: 'Base de adquisición' },
+    { step: '2', label: 'Registrados', value: last(data.registrados), pctLabel: fmtPct(last(data.registrados)/last(data.referenciados)) + ' conversión' },
+    { step: '3', label: 'Activos', value: last(activos), pctLabel: fmtPct(last(activos)/last(data.registrados)) + ' fondeo' },
+    { step: '4', label: 'WAP', value: last(data.wap), pctLabel: fmtPct(last(activationRate)) + ' activación' },
   ];
-  document.getElementById('funnel').innerHTML = steps.map((s, i) => {
-    const arrow = i > 0 ? '<span class="funnel-arrow">&#10132;</span>' : '';
-    return `${arrow}<div class="funnel-step">
-      <div class="funnel-bar" style="background:${s.color};color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.4)">${fmt(s.value)}</div>
-      <div class="funnel-label">${s.label}</div>
-      ${s.pctLabel ? `<div class="funnel-pct">${s.pctLabel}</div>` : '<div class="funnel-pct">&nbsp;</div>'}
-    </div>`;
-  }).join('');
+  document.getElementById('funnel').innerHTML = `
+    <div class="funnel-shell">
+      <div class="cluster-card">
+        <div class="funnel-container">
+          ${steps.map((s, i) => {
+            const arrow = i < steps.length - 1 ? '<div class="funnel-arrow">&#8595;</div>' : '';
+            return `<div class="funnel-step" data-step="${s.step}">
+              <div class="funnel-label">${s.label}</div>
+              <div class="funnel-bar">${fmt(s.value)}</div>
+              ${s.pctLabel ? `<div class="funnel-pct">${s.pctLabel}</div>` : '<div class="funnel-pct">&nbsp;</div>'}
+            </div>${arrow}`;
+          }).join('')}
+        </div>
+      </div>
+      <div class="funnel-footnote">Referenciados → Registrados → Activos → WAP</div>
+    </div>
+  `;
+}
+
+function renderNorthStarCard() {
+  const activeStats = aggregatePeriod(activos, 'last');
+  const inflowPerActive = totalInflow.map((v, i) => (v * 1e6) / activos[i]);
+  const inflowPerActiveStats = aggregatePeriod(inflowPerActive, 'avg');
+  const monetizationStats = aggregatePeriod(monetization, 'avg');
+  const monetizationDisplay = Math.min(0.03, Math.max(0.015, monetizationStats.currentValue));
+  const valueEstimate = activeStats.currentValue * inflowPerActiveStats.currentValue * monetizationDisplay;
+  const target = document.getElementById('north-star-card');
+  if (!target) return;
+
+  target.innerHTML = `
+    <div class="north-star-card">
+      <div class="north-star-formula">
+        <div class="north-star-row">
+          <div class="north-star-step">1</div>
+          <div class="north-star-label">Usuarios Activos</div>
+          <div class="north-star-value">${fmtNumber(activeStats.currentValue)}</div>
+        </div>
+        <div class="north-star-row">
+          <div class="north-star-step">2</div>
+          <div class="north-star-label">Inflow promedio</div>
+          <div class="north-star-value">${fmtCurrency(Math.round(inflowPerActiveStats.currentValue))}</div>
+        </div>
+        <div class="north-star-row">
+          <div class="north-star-step">3</div>
+          <div class="north-star-label">% Monetización</div>
+          <div class="north-star-value">${fmtPct(monetizationDisplay)}</div>
+        </div>
+        <div class="north-star-row is-result">
+          <div class="north-star-label">Gross P. (est.)</div>
+          <div class="north-star-value">${fmtCurrencyCompactLeadingDollar(valueEstimate)}</div>
+        </div>
+      </div>
+      <div class="north-star-footnote">
+        Gross P = activos x inflow promedio x % monetización
+        <div class="north-star-defs">
+          <div class="north-star-def">Activos = usuarios con saldo en tarjeta y/o transacciones</div>
+          <div class="north-star-def">Inflow promedio = inflow prom. por usuario</div>
+          <div class="north-star-def">% monetización = take rate efectivo</div>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 const charts = {};
@@ -701,10 +1472,11 @@ function sl(arr) { return arr.slice(-visibleWeeks); }
 function wkLabels() { return WEEKS.slice(-visibleWeeks); }
 const cOpts = {
   responsive: true, maintainAspectRatio: true,
-  plugins: { legend: { labels: { color: '#636e8a', font: { size: 11 }, boxWidth: 12 } } },
+  interaction: { mode: 'index', intersect: false },
+  plugins: { legend: { labels: { color: '#6b6b6b', font: { size: 11 }, boxWidth: 10, usePointStyle: true } } },
   scales: {
-    x: { ticks: { color: '#636e8a', maxRotation: 0 }, grid: { color: 'rgba(42,46,69,0.4)' } },
-    y: { ticks: { color: '#636e8a', precision: 0 }, grid: { color: 'rgba(42,46,69,0.4)' } }
+    x: { ticks: { color: '#9a9a9a', maxRotation: 0 }, grid: { display: false }, border: { display: false } },
+    y: { ticks: { color: '#a3a3a3', precision: 0 }, grid: { display: false }, border: { display: false } }
   }
 };
 
@@ -720,70 +1492,82 @@ function mk(id, type, ds, opts={}) {
 
 function renderCharts() {
   mk('chartUsers', 'line', [
-    { label: 'Referenciados', data: sl(data.referenciados), borderColor: '#636e8a', borderDash:[4,4], tension:.3, pointRadius:2 },
-    { label: 'Registrados', data: sl(data.registrados), borderColor: '#74b9ff', tension:.3, fill:false, pointRadius:2 },
-    { label: 'Activos', data: sl(activos), borderColor: '#fdcb6e', backgroundColor:'rgba(253,203,110,0.06)', fill:true, tension:.3, pointRadius:2 },
-    { label: 'WAU (solo saldo)', data: sl(data.wau), borderColor: '#e17055', backgroundColor:'rgba(225,112,85,0.08)', fill:true, tension:.3, pointRadius:2 },
-    { label: 'WAP (al menos 1 pago)', data: sl(data.wap), borderColor: '#00cec9', backgroundColor:'rgba(0,206,201,0.08)', fill:true, tension:.3, pointRadius:2 },
+    { label: 'Referenciados', data: sl(data.referenciados), borderColor: '#d0d4db', borderDash:[5,5], tension:.35, pointRadius:0, borderWidth:2 },
+    { label: 'Registrados', data: sl(data.registrados), borderColor: '#9aa4b2', tension:.35, fill:false, pointRadius:0, borderWidth:2 },
+    { label: 'Activos', data: sl(activos), borderColor: '#111111', backgroundColor:'rgba(17,17,17,0.04)', fill:false, tension:.35, pointRadius:0, borderWidth:2.5 },
+    { label: 'WAU (solo saldo)', data: sl(data.wau), borderColor: '#b7d8c7', backgroundColor:'rgba(183,216,199,0.08)', fill:false, tension:.35, pointRadius:0, borderWidth:2 },
+    { label: 'WAP (al menos 1 pago)', data: sl(data.wap), borderColor: '#8fb6a0', backgroundColor:'rgba(143,182,160,0.08)', fill:false, tension:.35, pointRadius:0, borderWidth:2.5 },
   ]);
-  mk('chartFlow', 'bar', [
-    { label: 'Inflow', data: sl(totalInflow), backgroundColor: 'rgba(0,206,201,0.7)', borderRadius: 4 },
-    { label: 'Outflow', data: sl(totalOutflow), backgroundColor: 'rgba(225,112,85,0.7)', borderRadius: 4 },
+  mk('chartFlow', 'line', [
+    { label: 'Inflow', data: sl(totalInflow), borderColor: '#111111', backgroundColor: 'rgba(17,17,17,0.05)', tension:.35, pointRadius:0, borderWidth:2.5 },
+    { label: 'Outflow', data: sl(totalOutflow), borderColor: '#8fb6a0', backgroundColor: 'rgba(143,182,160,0.08)', tension:.35, pointRadius:0, borderWidth:2.5 },
   ]);
   mk('chartRevenue', 'line', [
-    { label: 'Revenue (K MXN)', data: sl(data.revenue), borderColor:'#fdcb6e', backgroundColor:'rgba(253,203,110,0.1)', fill:true, tension:.3, yAxisID:'y', pointRadius:2 },
-    { label: 'ARPU ($)', data: sl(arpu).map(v=>+v.toFixed(1)), borderColor:'#74b9ff', borderDash:[5,5], tension:.3, yAxisID:'y1', pointRadius:2 },
-  ], { scales: { ...cOpts.scales, y:{...cOpts.scales.y, position:'left'}, y1:{...cOpts.scales.y, position:'right', grid:{drawOnChartArea:false}} } });
+    { label: 'Revenue (K MXN)', data: sl(data.revenue), borderColor:'#111111', backgroundColor:'rgba(17,17,17,0.05)', fill:false, tension:.35, yAxisID:'y', pointRadius:0, borderWidth:2.5 },
+    { label: 'ARPU ($)', data: sl(arpu).map(v=>+v.toFixed(1)), borderColor:'#8fb6a0', borderDash:[5,5], tension:.35, yAxisID:'y1', pointRadius:0, borderWidth:2 },
+  ], { scales: { ...cOpts.scales, y:{...cOpts.scales.y, position:'left'}, y1:{...cOpts.scales.y, position:'right', grid:{drawOnChartArea:false}, border:{display:false}, ticks:{color:'#8ea0bd'}} } });
   mk('chartChurn', 'line', [
-    { label: 'Churn sin Saldo %', data: sl(data.churnSinSaldo).map(v=>+(v*100).toFixed(1)), borderColor:'#d63031', backgroundColor:'rgba(214,48,49,0.1)', fill:true, tension:.3, yAxisID:'y', pointRadius:2 },
-    { label: 'Churn sin Pagos %', data: sl(data.churnSinPagos).map(v=>+(v*100).toFixed(1)), borderColor:'#e17055', backgroundColor:'rgba(225,112,85,0.1)', fill:true, tension:.3, yAxisID:'y', pointRadius:2 },
-    { label: 'Retención %', data: sl(data.retention).map(v=>+(v*100).toFixed(1)), borderColor:'#00b894', backgroundColor:'rgba(0,184,148,0.1)', fill:true, tension:.3, yAxisID:'y1', pointRadius:2 },
-  ], { scales: { ...cOpts.scales, y:{...cOpts.scales.y, position:'left'}, y1:{...cOpts.scales.y, position:'right', grid:{drawOnChartArea:false}} } });
+    { label: 'Churn sin Saldo %', data: sl(data.churnSinSaldo).map(v=>+(v*100).toFixed(1)), borderColor:'#b65c5c', backgroundColor:'rgba(182,92,92,0.08)', fill:false, tension:.35, yAxisID:'y', pointRadius:0, borderWidth:2 },
+    { label: 'Churn sin Pagos %', data: sl(data.churnSinPagos).map(v=>+(v*100).toFixed(1)), borderColor:'#d2b7b7', backgroundColor:'rgba(210,183,183,0.1)', fill:false, tension:.35, yAxisID:'y', pointRadius:0, borderWidth:2 },
+    { label: 'Retención %', data: sl(data.retention).map(v=>+(v*100).toFixed(1)), borderColor:'#111111', backgroundColor:'rgba(17,17,17,0.04)', fill:false, tension:.35, yAxisID:'y1', pointRadius:0, borderWidth:2.5 },
+  ], { scales: { ...cOpts.scales, y:{...cOpts.scales.y, position:'left'}, y1:{...cOpts.scales.y, position:'right', grid:{drawOnChartArea:false}, border:{display:false}, ticks:{color:'#8ea0bd'}} } });
   mk('chartUnitEcon', 'line', [
-    { label: 'Txns/WAP', data: sl(txnsPerWAP).map(v=>+v.toFixed(1)), borderColor:'#6c5ce7', tension:.3, yAxisID:'y', pointRadius:2 },
-    { label: 'Inflow/WAP ($)', data: sl(inflowPerWAP).map(v=>Math.round(v)), borderColor:'#00cec9', tension:.3, yAxisID:'y1', pointRadius:2 },
-  ], { scales: { ...cOpts.scales, y:{...cOpts.scales.y, position:'left'}, y1:{...cOpts.scales.y, position:'right', grid:{drawOnChartArea:false}} } });
+    { label: 'Txns/WAP', data: sl(txnsPerWAP).map(v=>+v.toFixed(1)), borderColor:'#111111', tension:.35, yAxisID:'y', pointRadius:0, borderWidth:2.5 },
+    { label: 'Inflow/WAP ($)', data: sl(inflowPerWAP).map(v=>Math.round(v)), borderColor:'#8fb6a0', tension:.35, yAxisID:'y1', pointRadius:0, borderWidth:2.5 },
+  ], { scales: { ...cOpts.scales, y:{...cOpts.scales.y, position:'left'}, y1:{...cOpts.scales.y, position:'right', grid:{drawOnChartArea:false}, border:{display:false}, ticks:{color:'#8ea0bd'}} } });
   mk('chartMonetization', 'line', [
-    { label: '% Monetización', data: sl(monetization).map(v=>+(v*100).toFixed(2)), borderColor:'#fdcb6e', backgroundColor:'rgba(253,203,110,0.15)', fill:true, tension:.3, pointRadius:2 },
+    { label: '% Monetización', data: sl(monetization).map(v=>+(v*100).toFixed(2)), borderColor:'#111111', backgroundColor:'rgba(17,17,17,0.04)', fill:false, tension:.35, pointRadius:0, borderWidth:2.5 },
   ]);
   const stacked = { scales: { ...cOpts.scales, x:{...cOpts.scales.x, stacked:true}, y:{...cOpts.scales.y, stacked:true} } };
   mk('chartInflowMonto', 'bar', [
-    { label: 'SPEI', data: sl(data.inflowSPEI), backgroundColor:'rgba(0,206,201,0.7)', borderRadius:4 },
-    { label: 'Recarga Tarjeta', data: sl(data.inflowRecarga), backgroundColor:'rgba(253,203,110,0.7)', borderRadius:4 },
+    { label: 'SPEI', data: sl(data.inflowSPEI), backgroundColor:'rgba(17,17,17,0.78)', borderRadius:8 },
+    { label: 'Recarga Tarjeta', data: sl(data.inflowRecarga), backgroundColor:'rgba(122,122,122,0.7)', borderRadius:8 },
+    { label: 'EB Wallet Mexas', data: sl(data.inflowEbWallet), backgroundColor:'rgba(143,182,160,0.78)', borderRadius:8 },
+    { label: 'EB Tarjeta', data: sl(data.inflowEbTarjeta), backgroundColor:'rgba(183,216,199,0.88)', borderRadius:8 },
   ], stacked);
   mk('chartInflowTxns', 'bar', [
-    { label: 'SPEI', data: sl(data.txnsSPEI), backgroundColor:'rgba(0,206,201,0.7)', borderRadius:4 },
-    { label: 'Recarga Tarjeta', data: sl(data.txnsRecarga), backgroundColor:'rgba(253,203,110,0.7)', borderRadius:4 },
+    { label: 'SPEI', data: sl(data.txnsSPEI), backgroundColor:'rgba(17,17,17,0.78)', borderRadius:8 },
+    { label: 'Recarga Tarjeta', data: sl(data.txnsRecarga), backgroundColor:'rgba(122,122,122,0.7)', borderRadius:8 },
+    { label: 'EB Wallet Mexas', data: sl(data.txnsEbWallet), backgroundColor:'rgba(143,182,160,0.78)', borderRadius:8 },
+    { label: 'EB Tarjeta', data: sl(data.txnsEbTarjeta), backgroundColor:'rgba(183,216,199,0.88)', borderRadius:8 },
   ], stacked);
   mk('chartOutflowMonto', 'bar', [
-    { label: 'Compra Tarjeta', data: sl(data.outflowCompra), backgroundColor:'rgba(0,206,201,0.7)', borderRadius:4 },
-    { label: 'Retiro Cripto', data: sl(data.outflowCripto), backgroundColor:'rgba(108,92,231,0.7)', borderRadius:4 },
-    { label: 'Retiro SPEI', data: sl(data.outflowSPEI), backgroundColor:'rgba(253,203,110,0.7)', borderRadius:4 },
+    { label: 'Compra Tarjeta', data: sl(data.outflowCompra), backgroundColor:'rgba(17,17,17,0.78)', borderRadius:8 },
+    { label: 'Retiro ATM', data: sl(data.outflowATM), backgroundColor:'rgba(183,216,199,0.88)', borderRadius:8 },
+    { label: 'Retiro Cripto', data: sl(data.outflowCripto), backgroundColor:'rgba(122,122,122,0.7)', borderRadius:8 },
+    { label: 'Retiro SPEI', data: sl(data.outflowSPEI), backgroundColor:'rgba(143,182,160,0.78)', borderRadius:8 },
   ], stacked);
   mk('chartOutflowTxns', 'bar', [
-    { label: 'Compra Tarjeta', data: sl(data.txnsCompra), backgroundColor:'rgba(0,206,201,0.7)', borderRadius:4 },
-    { label: 'Retiro Cripto', data: sl(data.txnsCripto), backgroundColor:'rgba(108,92,231,0.7)', borderRadius:4 },
-    { label: 'Retiro SPEI', data: sl(data.txnsRetSPEI), backgroundColor:'rgba(253,203,110,0.7)', borderRadius:4 },
+    { label: 'Compra Tarjeta', data: sl(data.txnsCompra), backgroundColor:'rgba(17,17,17,0.78)', borderRadius:8 },
+    { label: 'Retiro ATM', data: sl(data.txnsATM), backgroundColor:'rgba(183,216,199,0.88)', borderRadius:8 },
+    { label: 'Retiro Cripto', data: sl(data.txnsCripto), backgroundColor:'rgba(122,122,122,0.7)', borderRadius:8 },
+    { label: 'Retiro SPEI', data: sl(data.txnsRetSPEI), backgroundColor:'rgba(143,182,160,0.78)', borderRadius:8 },
   ], stacked);
   mk('chartInflowDetail', 'line', [
-    { label: 'SPEI', data: sl(data.inflowSPEI), borderColor:'#00cec9', tension:.3, fill:true, backgroundColor:'rgba(0,206,201,0.1)', pointRadius:2 },
-    { label: 'Recarga Tarjeta', data: sl(data.inflowRecarga), borderColor:'#fdcb6e', tension:.3, fill:true, backgroundColor:'rgba(253,203,110,0.1)', pointRadius:2 },
+    { label: 'SPEI', data: sl(data.inflowSPEI), borderColor:'#111111', tension:.35, fill:false, pointRadius:0, borderWidth:2.5 },
+    { label: 'Recarga Tarjeta', data: sl(data.inflowRecarga), borderColor:'#7a7a7a', tension:.35, fill:false, pointRadius:0, borderWidth:2 },
+    { label: 'EB Wallet Mexas', data: sl(data.inflowEbWallet), borderColor:'#8fb6a0', tension:.35, fill:false, pointRadius:0, borderWidth:2 },
+    { label: 'EB Tarjeta', data: sl(data.inflowEbTarjeta), borderColor:'#b7d8c7', tension:.35, fill:false, pointRadius:0, borderWidth:2 },
   ]);
   mk('chartOutflowDetail', 'line', [
-    { label: 'Compra Tarjeta', data: sl(data.outflowCompra), borderColor:'#00cec9', tension:.3, pointRadius:2 },
-    { label: 'Retiro Cripto', data: sl(data.outflowCripto), borderColor:'#6c5ce7', tension:.3, pointRadius:2 },
-    { label: 'Retiro SPEI', data: sl(data.outflowSPEI), borderColor:'#fdcb6e', tension:.3, pointRadius:2 },
+    { label: 'Compra Tarjeta', data: sl(data.outflowCompra), borderColor:'#111111', tension:.35, pointRadius:0, borderWidth:2.5 },
+    { label: 'Retiro ATM', data: sl(data.outflowATM), borderColor:'#b7d8c7', tension:.35, pointRadius:0, borderWidth:2 },
+    { label: 'Retiro Cripto', data: sl(data.outflowCripto), borderColor:'#7a7a7a', tension:.35, pointRadius:0, borderWidth:2 },
+    { label: 'Retiro SPEI', data: sl(data.outflowSPEI), borderColor:'#8fb6a0', tension:.35, pointRadius:0, borderWidth:2 },
   ]);
 }
 
 function renderFlowTable() {
   const wow = (arr) => { const p = arr[arr.length-2]; return p ? (last(arr)-p)/p : 0; };
-  const tIn = last(data.inflowSPEI) + last(data.inflowRecarga);
-  const tOut = last(data.outflowCompra) + last(data.outflowCripto) + last(data.outflowSPEI);
+  const tIn = last(totalInflow);
+  const tOut = last(totalOutflow);
   const flows = [
     { n:'SPEI (depósito)', d:'inflow', tx:last(data.txnsSPEI), m:last(data.inflowSPEI), p:last(data.inflowSPEI)/tIn, w:wow(data.inflowSPEI) },
     { n:'Recarga Tarjeta', d:'inflow', tx:last(data.txnsRecarga), m:last(data.inflowRecarga), p:last(data.inflowRecarga)/tIn, w:wow(data.inflowRecarga) },
+    { n:'Dispersión Wallet Mexas (EB)', d:'inflow', tx:last(data.txnsEbWallet), m:last(data.inflowEbWallet), p:last(data.inflowEbWallet)/tIn, w:wow(data.inflowEbWallet) },
+    { n:'Dispersión a Tarjeta (EB)', d:'inflow', tx:last(data.txnsEbTarjeta), m:last(data.inflowEbTarjeta), p:last(data.inflowEbTarjeta)/tIn, w:wow(data.inflowEbTarjeta) },
     { n:'Compra con Tarjeta', d:'outflow', tx:last(data.txnsCompra), m:last(data.outflowCompra), p:last(data.outflowCompra)/tOut, w:wow(data.outflowCompra) },
+    { n:'Retiro ATM con Tarjeta', d:'outflow', tx:last(data.txnsATM), m:last(data.outflowATM), p:last(data.outflowATM)/tOut, w:wow(data.outflowATM) },
     { n:'Retiro a Cripto', d:'outflow', tx:last(data.txnsCripto), m:last(data.outflowCripto), p:last(data.outflowCripto)/tOut, w:wow(data.outflowCripto) },
     { n:'Retiro SPEI', d:'outflow', tx:last(data.txnsRetSPEI), m:last(data.outflowSPEI), p:last(data.outflowSPEI)/tOut, w:wow(data.outflowSPEI) },
   ];
@@ -798,27 +1582,27 @@ function renderFlowTable() {
 function renderConversionCharts() {
   const pctY = { scales: { ...cOpts.scales, y: { ...cOpts.scales.y, ticks: { ...cOpts.scales.y.ticks, precision: 0, callback: v => v + '%' } } } };
   mk('chartConvReg','line',[
-    {label:'Tasa Registro %',data:sl(regRate).map(v=>+(v*100).toFixed(1)),borderColor:'#74b9ff',backgroundColor:'rgba(116,185,255,0.1)',fill:true,tension:.3,pointRadius:2}
+    {label:'Tasa Registro %',data:sl(regRate).map(v=>+(v*100).toFixed(1)),borderColor:'#111111',backgroundColor:'rgba(17,17,17,0.04)',fill:false,tension:.35,pointRadius:0,borderWidth:2.5}
   ], pctY);
   mk('chartConvFondeo','line',[
-    {label:'Tasa Fondeo %',data:sl(fundingRate).map(v=>+(v*100).toFixed(1)),borderColor:'#fdcb6e',backgroundColor:'rgba(253,203,110,0.1)',fill:true,tension:.3,pointRadius:2}
+    {label:'Tasa Fondeo %',data:sl(fundingRate).map(v=>+(v*100).toFixed(1)),borderColor:'#7a7a7a',backgroundColor:'rgba(122,122,122,0.06)',fill:false,tension:.35,pointRadius:0,borderWidth:2}
   ], pctY);
   mk('chartConvActivation','line',[
-    {label:'Tasa Activación en Pagos %',data:sl(activationRate).map(v=>+(v*100).toFixed(1)),borderColor:'#00cec9',backgroundColor:'rgba(0,206,201,0.1)',fill:true,tension:.3,pointRadius:2}
+    {label:'Tasa Activación en Pagos %',data:sl(activationRate).map(v=>+(v*100).toFixed(1)),borderColor:'#8fb6a0',backgroundColor:'rgba(143,182,160,0.08)',fill:false,tension:.35,pointRadius:0,borderWidth:2.5}
   ], pctY);
   const e2e = data.wap.map((v,i)=>v/data.referenciados[i]);
   mk('chartConvE2E','line',[
-    {label:'Conversión E2E %',data:sl(e2e).map(v=>+(v*100).toFixed(2)),borderColor:'#6c5ce7',backgroundColor:'rgba(108,92,231,0.1)',fill:true,tension:.3,pointRadius:2}
+    {label:'Conversión E2E %',data:sl(e2e).map(v=>+(v*100).toFixed(2)),borderColor:'#b7d8c7',backgroundColor:'rgba(183,216,199,0.08)',fill:false,tension:.35,pointRadius:0,borderWidth:2.5}
   ], pctY);
   const stk = { scales: { ...cOpts.scales, x:{...cOpts.scales.x, stacked:true}, y:{...cOpts.scales.y, stacked:true, ticks:{...cOpts.scales.y.ticks, precision:0}} } };
   const sinSaldo=data.registrados.map((v,i)=>v-activos[i]);
   mk('chartCardStatus','bar',[
-    {label:'Con Saldo (Activos)',data:sl(activos),backgroundColor:'rgba(0,206,201,0.7)',borderRadius:4},
-    {label:'Sin Saldo',data:sl(sinSaldo),backgroundColor:'rgba(99,110,138,0.5)',borderRadius:4},
+    {label:'Con Saldo (Activos)',data:sl(activos),backgroundColor:'rgba(17,17,17,0.78)',borderRadius:8},
+    {label:'Sin Saldo',data:sl(sinSaldo),backgroundColor:'rgba(183,183,183,0.8)',borderRadius:8},
   ], stk);
   mk('chartWauWap','bar',[
-    {label:'WAU (solo saldo)',data:sl(data.wau),backgroundColor:'rgba(253,203,110,0.7)',borderRadius:4},
-    {label:'WAP (al menos 1 pago)',data:sl(data.wap),backgroundColor:'rgba(0,206,201,0.7)',borderRadius:4},
+    {label:'WAU (solo saldo)',data:sl(data.wau),backgroundColor:'rgba(183,216,199,0.82)',borderRadius:8},
+    {label:'WAP (al menos 1 pago)',data:sl(data.wap),backgroundColor:'rgba(17,17,17,0.78)',borderRadius:8},
   ], stk);
 }
 
@@ -836,25 +1620,25 @@ function renderConvTable() {
   }).join('');
 }
 
-function showTab(tab) {
+function showTab(tab, button) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
-  event.target.classList.add('active');
+  if (button) button.classList.add('active');
   renderCharts();
-  if (tab === 'flows') renderFlowTable();
-  if (tab === 'conversion') { renderConversionCharts(); renderConvTable(); }
+  if (tab === 'flows') { renderFlowTable(); renderConversionCharts(); }
+  if (tab === 'users') { renderConversionCharts(); renderConvTable(); }
 }
 
 function toggleFilter() {
   document.getElementById('filterDropdown').classList.toggle('open');
 }
-function setFilter(key, label, weeks) {
+function setFilter(key, label, weeks, button) {
   visibleWeeks = weeks;
   document.getElementById('filterLabel').textContent = label;
   document.getElementById('filterDropdown').classList.remove('open');
   document.querySelectorAll('.filter-option').forEach(b => b.classList.remove('active'));
-  event.target.closest('.filter-option').classList.add('active');
+  if (button) button.classList.add('active');
   renderAll();
 }
 function toggleCustomRange(e) {
@@ -883,7 +1667,7 @@ document.addEventListener('click', function(e) {
   }
 });
 
-function renderAll() { renderKPIs(); renderFunnel(); renderCharts(); renderFlowTable(); renderConversionCharts(); renderConvTable(); }
+function renderAll() { renderExecutiveSummary(); renderKPIs(); renderChartSummaries(); renderFunnel(); renderNorthStarCard(); renderCharts(); renderFlowTable(); renderConversionCharts(); renderConvTable(); }
 renderAll();
 </script>
 </body>
